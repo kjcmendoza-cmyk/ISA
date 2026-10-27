@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>The Night Sanctuary - 3D Celestial Navigator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js CDN (r128) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- Three.js Post-Processing Addons -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+<!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            box-sizing: border-box;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #020308;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #e2e8f0;
+        }
+        .font-serif-title {
+            font-family: 'Cinzel', serif;
+        }
+        
+        /* Glassmorphism UI styling */
+        .glass-panel {
+            background: rgba(8, 12, 24, 0.88);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.85), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-btn:hover, .glass-btn:active {
+            background: rgba(255, 255, 255, 0.22);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+        }
+        .glow-title {
+            text-shadow: 0 0 18px rgba(192, 132, 252, 0.7), 0 0 35px rgba(99, 102, 241, 0.5);
+        }
+        .glow-emerald {
+            text-shadow: 0 0 14px rgba(52, 211, 153, 0.8);
+        }
+        .glow-gold {
+            text-shadow: 0 0 14px rgba(254, 240, 138, 0.8);
+        }
+
+        /* 3D Dynamic Floating Labels (Hidden text by default, expanded on hover) */
+        .sky-label {
+            position: absolute;
+            transform: translate(-50%, -100%);
+            pointer-events: auto;
+            cursor: pointer;
+            transition: opacity 0.3s ease, transform 0.1s linear;
+            will-change: transform, opacity;
+            z-index: 10;
+        }
+        .sky-label-inner {
+            background: rgba(10, 15, 30, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 9999px;
+            padding: 5px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sky-label-icon {
+            line-height: 1;
+            transition: transform 0.3s ease;
+        }
+        .sky-label-text {
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            transition: max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.3s ease;
+            margin-left: 0;
+        }
+
+        /* Hover states for floating labels */
+        .sky-label:hover .sky-label-inner,
+        .sky-label.is-hovered .sky-label-inner {
+            background: rgba(15, 23, 42, 0.92);
+            border-color: rgba(254, 240, 138, 0.8);
+            padding: 5px 14px;
+            transform: scale(1.12);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.6);
+        }
+        .sky-label:hover .sky-label-text,
+        .sky-label.is-hovered .sky-label-text {
+            max-width: 220px;
+            opacity: 1;
+            margin-left: 6px;
+        }
+        .sky-label:hover .sky-label-icon,
+        .sky-label.is-hovered .sky-label-icon {
+            transform: scale(1.1);
+        }
+
+        /* Breathing ring pulse animation */
+        @keyframes ringBreathing {
+            0% { transform: scale(0.85); opacity: 0.4; box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+            50% { transform: scale(1.35); opacity: 0.95; box-shadow: 0 0 65px rgba(52, 211, 153, 0.7); }
+            100% { transform: scale(0.85); opacity: 0.4; box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+        }
+        .breathing-ring-anim {
+            animation: ringBreathing 12s infinite ease-in-out;
+        }
+
+        /* Floating pulse */
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .float-element {
+            animation: gentleFloat 4s infinite ease-in-out;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(168, 85, 247, 0.4);
+            border-radius: 4px;
+        }
+        /* UI Stardust Disintegration Effect */
+@keyframes particleDissolve {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--dx), var(--dy)) scale(0);
+        opacity: 0;
+    }
+}
+.disintegrate-particle {
+    position: fixed;
+    pointer-events: none;
+    border-radius: 50%;
+    z-index: 100;
+    animation: particleDissolve 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+    </style>
+</head>
+<body class="relative overflow-hidden w-full h-full select-none">
+
+    <!-- WebGL Canvas Container -->
+    <div id="canvas-container" class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"></div>
+
+    <!-- 3D Interactive World Labels Container -->
+    <div id="labels-container" class="absolute inset-0 pointer-events-none z-10 overflow-hidden"></div>
+
+    <!-- UI Overlay Layer -->
+    <div id="ui-layer" class="absolute inset-0 pointer-events-none flex flex-col justify-between p-4 sm:p-6 z-20">
+
+        <!-- Header Bar -->
+        <header class="flex items-center justify-between w-full pointer-events-auto">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full glass-panel flex items-center justify-center text-indigo-300 shadow-lg">
+                    <svg class="w-5 h-5 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="font-serif-title text-sm sm:text-base tracking-wider text-slate-100 font-medium glow-title">The Night Sanctuary</h1>
+                    <p class="text-[11px] text-indigo-300/80 font-light">3D Celestial Haven & Rest</p>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Celestial Map Toggle Button -->
+                <button id="btn-map-toggle" title="Celestial Radar Map" class="glass-btn px-3 py-2 sm:px-4 sm:py-2.5 rounded-full flex items-center gap-2 text-xs font-medium text-amber-200 border-amber-400/40 hover:border-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+                    <span class="text-base">🗺️</span>
+                    <span class="hidden sm:inline">Sanctuary Map</span>
+                </button>
+
+                <!-- Music / Audio Toggle -->
+                <button id="btn-audio-toggle" title="Toggle Music" class="glass-btn p-2.5 sm:px-4 sm:py-2.5 rounded-full flex items-center gap-2 text-xs font-medium text-slate-200">
+                    <svg id="music-icon" class="w-4 h-4 text-purple-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                    </svg>
+                    <span class="hidden sm:inline text-indigo-200" id="audio-status-label">No Surprises (Glockenspiel)</span>
+                </button>
+
+                <!-- Fullscreen Toggle -->
+                <button id="btn-fullscreen" title="Toggle Fullscreen" class="glass-btn p-2.5 rounded-full text-slate-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Footer Overlay -->
+        <footer class="flex flex-col sm:flex-row items-center justify-between gap-3 text-center text-xs text-slate-400/80 pointer-events-auto">
+            <div id="hint-banner" class="glass-panel px-4 py-2 rounded-full transition-opacity duration-1000 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-300 animate-ping"></span>
+                <span>Drag to rotate 360° • Scroll to zoom • Hover over 3D celestial objects to reveal names</span>
+            </div>
+            <div class="glass-panel px-3.5 py-1.5 rounded-full text-[11px] text-indigo-300 flex items-center gap-1.5">
+                <span>✨ 3D WebGL Interactive Sanctuary</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Celestial Map & Feature Navigator Panel -->
+    <div id="map-drawer" class="fixed top-20 right-4 sm:right-6 z-30 w-full max-w-sm sm:max-w-md glass-panel rounded-3xl p-5 border border-amber-500/30 shadow-[0_0_50px_rgba(0,0,0,0.85)] pointer-events-auto transition-all duration-500 transform translate-x-[120%] opacity-0">
+        <div class="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">🗺️</span>
+                <h3 class="font-serif-title text-sm sm:text-base text-slate-100 font-medium glow-gold">Celestial Feature Radar</h3>
+            </div>
+            <button id="close-map-drawer" class="text-slate-400 hover:text-white text-base glass-btn w-7 h-7 rounded-full flex items-center justify-center">✕</button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 items-center">
+            <!-- 2D Radar Canvas -->
+            <div class="relative flex-shrink-0 flex flex-col items-center">
+                <canvas id="radar-canvas" width="170" height="170" class="rounded-full bg-slate-950/90 border border-amber-400/40 shadow-inner cursor-pointer"></canvas>
+                <span class="text-[10px] text-indigo-300/70 mt-1">Live 360° Radar & FOV</span>
+            </div>
+
+            <!-- Jump List -->
+            <div class="w-full flex-grow">
+                <div class="text-[11px] text-amber-200/90 font-medium mb-1.5 flex items-center justify-between">
+                    <span>Direct Sky Teleport</span>
+                    <span class="text-[10px] text-indigo-300/60">Tap to orbit</span>
+                </div>
+                <div id="map-feature-list" class="space-y-1.5 max-h-52 overflow-y-auto pr-1">
+                    <!-- Dynamic Feature List Items -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 1: Cosmic Message Orb Modal -->
+    <div id="orb-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500 transform scale-95">
+        <div class="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-indigo-500/30 shadow-[0_0_60px_rgba(99,102,241,0.2)]">
+            <div class="absolute -top-12 -right-12 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <div id="orb-icon" class="w-12 h-12 rounded-full bg-indigo-950/80 border border-amber-300/40 flex items-center justify-center mb-3 text-2xl shadow-inner text-amber-200 float-element">
+                    📍
+                </div>
+                <div id="orb-tag" class="text-[11px] font-medium text-amber-300 tracking-wider uppercase mb-1">Isa's Cozy Corner</div>
+                <h3 id="orb-title" class="font-serif-title text-base sm:text-lg text-slate-100 glow-title mb-3">The Earth Pin</h3>
+                
+                <blockquote id="orb-message" class="text-sm sm:text-base text-slate-100 font-light leading-relaxed my-2 font-serif-title italic">
+                    "From out here, any exam, tough lesson, or bad study day is smaller than a single speck of dust..."
+                </blockquote>
+                
+                <p id="orb-subtext" class="text-xs text-indigo-200/70 font-light my-4">
+                    Take all the time you need to rest here tonight.
+                </p>
+                <button id="close-orb-modal" class="glass-btn px-8 py-2.5 rounded-full text-xs font-medium text-slate-200 hover:text-white">
+                    Return to Sanctuary
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Shooting Star "Worry Release" Ritual Modal -->
+    <div id="release-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 sm:p-6 bg-slate-950/75 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500 transform scale-95">
+        <div class="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 relative overflow-hidden border border-amber-500/30 shadow-[0_0_60px_rgba(245,158,11,0.2)]">
+            <div class="relative z-10 flex flex-col items-center text-center">
+                <div class="w-12 h-12 rounded-full bg-amber-950/60 border border-amber-400/40 flex items-center justify-center mb-3 text-2xl shadow-inner float-element">
+                    💫
+                </div>
+                <span class="text-[11px] font-medium text-amber-300 uppercase tracking-widest mb-1">Worry Release Ritual</span>
+                <h3 class="font-serif-title text-lg text-slate-100 font-medium mb-1 glow-gold">Dissolve Your Burdens</h3>
+                
+                <p class="text-xs sm:text-sm text-amber-100/90 font-serif-title italic mb-4 max-w-sm">
+                    "What is weighing on your mind today?"
+                </p>
+
+                <!-- Input Field -->
+                <div class="flex items-center gap-2 w-full mb-4">
+                    <input type="text" id="custom-thought-input" placeholder="Type a topic, deadline, or self-doubt..." 
+                        class="w-full px-4 py-2.5 rounded-full bg-indigo-950/60 border border-indigo-400/30 text-xs text-slate-100 focus:outline-none focus:border-amber-400/60 placeholder:text-indigo-300/40">
+                    <button id="btn-release-custom" class="glass-btn px-5 py-2.5 rounded-full text-xs font-medium text-amber-200 whitespace-nowrap hover:bg-amber-500/20">
+                        Release ✨
+                    </button>
+                </div>
+
+                <!-- Chips -->
+                <div id="heavy-chips-container" class="flex flex-wrap justify-center gap-2 mb-4 w-full max-h-36 overflow-y-auto">
+                    <!-- Dynamic chips -->
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/20 mb-4">
+                    <p class="text-xs text-indigo-200/90 font-light italic leading-relaxed">
+                        "Whatever topic, deadline, or self-doubt is stressing you out right now, let it dissolve into stardust. You don't have to carry the whole world on your shoulders today."
+                    </p>
+                </div>
+
+                <button id="close-release-modal" class="glass-btn px-8 py-2.5 rounded-full text-xs font-medium text-slate-200 hover:text-white">
+                    Return to Sanctuary
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: "A Letter For You" Modal -->
+    <div id="letter-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500 transform scale-95">
+        <div class="glass-panel w-full max-w-xl max-h-[85vh] rounded-3xl p-6 sm:p-10 relative overflow-y-auto border border-purple-500/30 shadow-[0_0_70px_rgba(168,85,247,0.25)] flex flex-col">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">📜</span>
+                    <h3 class="font-serif-title text-base sm:text-lg text-slate-100 glow-title">A Letter For Your Heart</h3>
+                </div>
+                <button id="close-letter-modal-x" class="text-slate-400 hover:text-white text-lg">✕</button>
+            </div>
+
+            <div class="text-xs sm:text-sm text-slate-200/90 leading-relaxed font-light space-y-4 my-2 font-serif-title">
+                <p class="text-indigo-200 font-medium text-sm">Dearest friend,</p>
+                <p>
+                    I see how hard you work, how much of yourself you give to your studies, and how deep you push yourself even when you are running on empty.
+                </p>
+                <p>
+                    Please listen carefully tonight: <span class="text-amber-200 font-normal">Your worth is not measured by a grade, an exam score, or how fast you master a tough concept.</span> Struggling with difficult subjects does not mean you aren't brilliant, and hitting a wall never means you have failed.
+                </p>
+                <p>
+                    You don't have to carry the weight of the whole world on your shoulders tonight. You don't have to prove anything to anyone. Everyone who believes in you sees your kindness, your incredible intelligence, and your resilience—things no academic score could ever calculate.
+                </p>
+                <p>
+                    Tonight, when you lay your head down and close your eyes, allow yourself to rest completely. No self-doubt. You have done more than enough.
+                </p>
+                <p class="text-right text-indigo-300 italic pt-2">
+                    Always in your corner ❤️<br><span class="text-xs text-indigo-300/80">Zero judgment, zero pressure</span>
+                </p>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-white/10 flex justify-center">
+                <button id="close-letter-modal" class="glass-btn px-8 py-3 rounded-full text-xs font-medium text-slate-200 hover:text-white">
+                    Fold Letter & Keep Gazing
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay 4: Guided Breathing Overlay -->
+    <div id="breathing-overlay" class="fixed inset-0 z-40 flex flex-col items-center justify-center pointer-events-none opacity-0 transition-opacity duration-700 bg-slate-950/70 backdrop-blur-md">
+        <div class="relative flex items-center justify-center">
+            <!-- Glowing Breathing Ring -->
+            <div class="w-64 h-64 sm:w-80 sm:h-80 rounded-full border-2 border-emerald-400/50 breathing-ring-anim flex items-center justify-center">
+                <div class="w-48 h-48 sm:w-60 sm:h-60 rounded-full bg-emerald-500/10 backdrop-blur-sm border border-indigo-400/30"></div>
+            </div>
+            <!-- Dynamic Text Prompt -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                <span id="breathing-phase" class="text-xl sm:text-2xl font-serif-title font-light tracking-widest text-emerald-200 glow-emerald mb-2">Inhale Peace</span>
+                <span id="breathing-subtext" class="text-xs sm:text-sm text-slate-300/80 font-light max-w-xs">Fill your lungs softly... let go of academic pressure</span>
+            </div>
+        </div>
+        <button id="close-breathing" class="pointer-events-auto mt-12 glass-btn px-6 py-2.5 rounded-full text-xs text-slate-300 hover:text-white flex items-center gap-2">
+            <span>End Breathing Ritual</span>
+            <span>✕</span>
+        </button>
+    </div>
+
+    <!-- Welcome / Entry Modal -->
+    <div id="welcome-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[#020308]/95 backdrop-blur-xl transition-opacity duration-1000">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-8 sm:p-10 text-center relative overflow-hidden border border-white/10 shadow-[0_0_90px_rgba(0,0,0,0.95)]">
+            <div class="w-20 h-20 mx-auto rounded-full bg-indigo-950/80 border border-amber-300/30 flex items-center justify-center text-3xl mb-6 shadow-lg shadow-indigo-500/20 float-element">
+                🌙
+            </div>
+
+            <h2 class="font-serif-title text-2xl sm:text-3xl text-slate-100 font-normal tracking-wide glow-title mb-3">
+                The Night Sanctuary
+            </h2>
+
+            <p class="text-xs sm:text-sm text-indigo-200/90 leading-relaxed font-light mb-6">
+                Turn off your lights, lay back in bed, and put on your headphones. Step into a 3D celestial haven built for your peace.
+            </p>
+
+            <div class="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/20 text-xs text-slate-300/80 font-light mb-8 space-y-2 text-left">
+                <p class="flex items-center gap-2">🗺️ <span>Use <strong>Sanctuary Radar Map</strong> to orbit features</span></p>
+                <p class="flex items-center gap-2">📍 <span>Hover over 3D Celestial Objects to reveal names & tap to explore</span></p>
+                <p class="flex items-center gap-2">💫 <span>Dissolve heavy thoughts into glowing stardust</span></p>
+                <p class="flex items-center gap-2">📜 <span>Read a letter written for your heart</span></p>
+                <p class="flex items-center gap-2">🌕 <span>Breathe with the 3D Moon</span></p>
+            </div>
+
+            <button id="btn-begin" class="w-full py-4 px-6 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-medium text-sm tracking-wider shadow-[0_0_35px_rgba(168,85,247,0.45)] hover:shadow-[0_0_50px_rgba(168,85,247,0.7)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+                Enter Your 3D Sanctuary ✨
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Core -->
+    <script>
+        // --- Web Audio API Synth Engine ---
+        class SanctuaryAudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.masterGain = null;
+                this.isPlaying = false;
+                this.volume = 0.5;
+                this.tempoBpm = 66;
+                this.stepIndex = 0;
+                this.timerId = null;
+
+                this.notes = {
+                    'F5': 698.46,
+                    'A5': 880.00,
+                    'Bb5': 932.33,
+                    'C6': 1046.50,
+                    'Db6': 1108.73,
+                    'F6': 1396.91
+                };
+
+                this.melodySequence = [
+                    'F5', 'A5', 'C6', 'F6', 'C6', 'A5', 'F5', 'C6',
+                    'F5', 'A5', 'C6', 'F6', 'C6', 'A5', 'F5', 'C6',
+                    'F5', 'Bb5', 'Db6', 'F6', 'Db6', 'Bb5', 'F5', 'Db6',
+                    'F5', 'A5', 'C6', 'F6', 'C6', 'A5', 'F5', 'C6'
+                ];
+
+                this.padOscs = [];
+                this.brownNoiseSource = null;
+this.brownNoiseGain = null;
+            }
+
+            init() {
+                if (this.ctx) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioContext();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+                this.masterGain.connect(this.ctx.destination);
+            }
+
+            playGlockenspielNote(freq) {
+                if (!this.ctx || !this.isPlaying) return;
+                const now = this.ctx.currentTime;
+
+                const osc1 = this.ctx.createOscillator();
+                const gain1 = this.ctx.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(freq, now);
+
+                const osc2 = this.ctx.createOscillator();
+                const gain2 = this.ctx.createGain();
+                osc2.type = 'triangle';
+                osc2.frequency.setValueAtTime(freq * 2.003, now);
+
+                gain1.gain.setValueAtTime(0, now);
+                gain1.gain.linearRampToValueAtTime(0.28, now + 0.008);
+                gain1.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+
+                gain2.gain.setValueAtTime(0, now);
+                gain2.gain.linearRampToValueAtTime(0.07, now + 0.005);
+                gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+
+                osc1.connect(gain1);
+                osc2.connect(gain2);
+                gain1.connect(this.masterGain);
+                gain2.connect(this.masterGain);
+
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 1.9);
+                osc2.stop(now + 1.0);
+            }
+
+            startAmbientPad() {
+                if (!this.ctx) return;
+                this.stopAmbientPad();
+                const now = this.ctx.currentTime;
+
+                const padFreqs = [174.61, 261.63, 329.63];
+                padFreqs.forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    const filter = this.ctx.createBiquadFilter();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    osc.detune.setValueAtTime((idx - 1) * 5, now);
+
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(260, now);
+
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.05, now + 3.0);
+
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(this.masterGain);
+
+                    osc.start(now);
+                    this.padOscs.push({ osc, gain });
+                });
+            }
+
+            stopAmbientPad() {
+                this.padOscs.forEach(item => {
+                    try {
+                        item.gain.gain.linearRampToValueAtTime(0.0001, this.ctx.currentTime + 1.0);
+                        setTimeout(() => item.osc.stop(), 1000);
+                    } catch(e){}
+                });
+                this.padOscs = [];
+            }
+startBrownNoise() {
+        if (!this.ctx) return;
+        this.stopBrownNoise();
+        
+
+        const bufferSize = this.ctx.sampleRate * 2;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const output = buffer.getChannelData(0);
+        let lastOut = 0.0;
+
+        for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            output[i] = (lastOut + (0.02 * white)) / 1.02;
+            lastOut = output[i];
+            output[i] *= 3.5;
+        }
+
+        this.brownNoiseSource = this.ctx.createBufferSource();
+        this.brownNoiseSource.buffer = buffer;
+        this.brownNoiseSource.loop = true;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(320, this.ctx.currentTime);
+
+        this.brownNoiseGain = this.ctx.createGain();
+        this.brownNoiseGain.gain.setValueAtTime(0, this.ctx.currentTime);
+        this.brownNoiseGain.gain.linearRampToValueAtTime(0.045, this.ctx.currentTime + 3.0);
+
+        this.brownNoiseSource.connect(filter);
+        filter.connect(this.brownNoiseGain);
+        this.brownNoiseGain.connect(this.masterGain);
+
+        this.brownNoiseSource.start();
+    }
+
+    stopBrownNoise() {
+        if (this.brownNoiseGain && this.ctx) {
+            try {
+                this.brownNoiseGain.gain.linearRampToValueAtTime(0.0001, this.ctx.currentTime + 1.0);
+                setTimeout(() => {
+                    if (this.brownNoiseSource) {
+                        this.brownNoiseSource.stop();
+                        this.brownNoiseSource.disconnect();
+                        this.brownNoiseSource = null;
+                    }
+                }, 1000);
+            } catch (e) {}
+        }
+    }
+            start() {
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                this.isPlaying = true;
+                this.stepIndex = 0;
+                this.startAmbientPad();
+                this.startBrownNoise();
+
+                const stepDuration = (60 / this.tempoBpm) / 2 * 1000;
+                
+                const tick = () => {
+                    if (!this.isPlaying) return;
+                    const noteKey = this.melodySequence[this.stepIndex];
+                    if (noteKey && this.notes[noteKey]) {
+                        this.playGlockenspielNote(this.notes[noteKey]);
+                    }
+                    this.stepIndex = (this.stepIndex + 1) % this.melodySequence.length;
+                    this.timerId = setTimeout(tick, stepDuration);
+                };
+
+                tick();
+            }
+
+            stop() {
+                this.isPlaying = false;
+                if (this.timerId) clearTimeout(this.timerId);
+                this.stopAmbientPad();
+                this.stopBrownNoise();
+            }
+
+            toggle() {
+                if (this.isPlaying) {
+                    this.stop();
+                    return false;
+                } else {
+                    this.start();
+                    return true;
+                }
+            }
+
+            playSoftChime() {
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1046.50, now);
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.18, now + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+                osc.connect(gain);
+                gain.connect(this.masterGain);
+                osc.start(now);
+                osc.stop(now + 2.5);
+            }
+        }
+
+        const audioEngine = new SanctuaryAudioEngine();
+
+        // --- Data Structure for 8 Celestial Features ---
+        const ALL_FEATURES = [
+            {
+                id: 'earth-pin',
+                name: 'The Earth Pin',
+                tag: 'Isa\'s Cozy Corner',
+                icon: '📍',
+                color: '#38bdf8',
+                type: 'orb',
+                pos: { x: 0, y: 15, z: -250 },
+                message: "From out here, any exam, tough lesson, or bad study day is smaller than a single speck of dust. The universe keeps quietly spinning, which means it is always safe for you to step back, catch your breath, and rest whenever you need to.",
+                subtext: "Zoom out whenever the weight feels too heavy tonight."
+            },
+            {
+                id: 'central-sun',
+                name: 'The Central Sun',
+                tag: 'Core Worth',
+                icon: '☀️',
+                color: '#fef08a',
+                type: 'orb',
+                pos: { x: 230, y: 35, z: 90 },
+                message: "Your value as a person isn't tied to your productivity, your grades, or how much you managed to accomplish today. You are capable, bright, and worthy—exactly as you are right now.",
+                subtext: "You don't need to earn your right to exist or rest."
+            },
+            {
+                id: 'strawberry-planet',
+                name: 'Strawberry Planet',
+                tag: 'Self-Compassion',
+                icon: '🍓',
+                color: '#f43f5e',
+                type: 'orb',
+                pos: { x: 120, y: -25, z: 220 },
+                message: "Perfectionism tries to convince you that feeling stuck is a failure. In reality, hitting a wall just means you're tackling something new. Be as patient with yourself as you would be with a friend.",
+                subtext: "Struggling with new material is proof of growth, not a fluke."
+            },
+            {
+                id: 'matcha-planet',
+                name: 'Matcha Planet',
+                tag: 'Permission to Rest',
+                icon: '🍵',
+                color: '#34d399',
+                type: 'orb',
+                pos: { x: -220, y: 25, z: 150 },
+                message: "Rest isn't a prize you earn only after working until exhaustion—it's a biological requirement. Taking a break from your studies isn't quitting; it's how your brain recharges to come back stronger.",
+                subtext: "Closing your books now is your most strategic study choice for tomorrow."
+            },
+            {
+                id: 'shield-constellation',
+                name: 'Shield Constellation',
+                tag: 'Kuya\'s Support',
+                icon: '✨',
+                color: '#c084fc',
+                type: 'orb',
+                pos: { x: -180, y: 55, z: -180 },
+                message: "You don't have to figure everything out on your own, and you never have to pretend you have it all together. Zero judgment, zero pressure—your Kuya is always in your corner.",
+                subtext: "You are never a burden, and your feelings are always valid."
+            },
+            {
+                id: 'worry-release',
+                name: 'Worry Release Flame',
+                tag: 'Shooting Star Ritual',
+                icon: '💫',
+                color: '#f59e0b',
+                type: 'release',
+                pos: { x: 0, y: -40, z: -210 }
+            },
+            {
+                id: 'letter-scroll',
+                name: 'Personal Letter Scroll',
+                tag: 'A Letter For You',
+                icon: '📜',
+                color: '#a855f7',
+                type: 'letter',
+                pos: { x: 140, y: 10, z: -190 }
+            },
+            {
+                id: 'breathing-moon',
+                name: 'Guided Breathing Moon',
+                tag: 'Breathe with Sky',
+                icon: '🌕',
+                color: '#6ee7b7',
+                type: 'breathe',
+                pos: { x: 0, y: 180, z: -300 }
+            }
+        ];
+
+        // Precalculate polar coordinates (Longitude & Latitude) for each feature
+        ALL_FEATURES.forEach(f => {
+            const r = Math.hypot(f.pos.x, f.pos.y, f.pos.z);
+            f.lat = Math.asin(f.pos.y / r) * (180 / Math.PI);
+            f.lon = Math.atan2(f.pos.z, f.pos.x) * (180 / Math.PI);
+        });
+
+        // --- Data: Heavy Thought Chips ---
+        let heavyThoughts = [
+            "Fear of being labeled 'OA'",
+            "Academic Pressure & Brain Fog",
+            "Productivity Guilt (2:00 AM)",
+            "Feeling Like a Fraud",
+            "Fear of Disappointing People",
+            "Comparing Myself to Classmates"
+        ];
+
+        // --- Procedural Canvas Texture Generators ---
+        function createGlowTexture(colorStr, size = 128) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            const half = size / 2;
+            const grad = ctx.createRadialGradient(half, half, 0, half, half, half);
+            grad.addColorStop(0, colorStr);
+            grad.addColorStop(0.3, colorStr);
+            grad.addColorStop(0.7, 'rgba(120, 119, 198, 0.2)');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, size, size);
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createEarthTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            // Ocean Base
+            ctx.fillStyle = '#0b3954';
+            ctx.fillRect(0, 0, 512, 256);
+
+            // Continents
+            ctx.fillStyle = '#1e7145';
+            const continents = [
+                {x: 100, y: 80, r: 40}, {x: 140, y: 110, r: 35}, {x: 220, y: 90, r: 50},
+                {x: 250, y: 160, r: 45}, {x: 360, y: 70, r: 30}, {x: 420, y: 140, r: 35}
+            ];
+            continents.forEach(c => {
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Clouds
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            for (let i = 0; i < 15; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * 512, Math.random() * 256, 15 + Math.random() * 25, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createMoonTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(0, 0, 512, 256);
+
+            // Craters
+            ctx.fillStyle = '#64748b';
+            for (let i = 0; i < 40; i++) {
+                ctx.beginPath();
+                ctx.arc(Math.random() * 512, Math.random() * 256, 4 + Math.random() * 18, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createMatchaTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#064e3b';
+            ctx.fillRect(0, 0, 512, 256);
+
+            ctx.fillStyle = '#10b981';
+            for (let i = 0; i < 12; i++) {
+                ctx.beginPath();
+                ctx.ellipse(Math.random() * 512, Math.random() * 256, 80 + Math.random() * 60, 15 + Math.random() * 20, Math.random() * Math.PI, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createStrawberryTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#9f1239';
+            ctx.fillRect(0, 0, 512, 256);
+
+            ctx.fillStyle = '#fb7185';
+            for (let i = 0; i < 15; i++) {
+                ctx.beginPath();
+                ctx.ellipse(Math.random() * 512, Math.random() * 256, 60 + Math.random() * 50, 10 + Math.random() * 15, Math.random() * Math.PI, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // --- Three.js 3D Engine Setup ---
+        let container, scene, camera, renderer, composer;
+        let isUserInteracting = false;
+        let onPointerDownPointerX = 0, onPointerDownPointerY = 0;
+        let onPointerDownLon = 0, onPointerDownLat = 0;
+        let lon = 0, lat = 0, targetLon = 0, targetLat = 0;
+        let pointerDragDistance = 0;
+        let activeFeatureId = null;
+        let targetCameraPos = new THREE.Vector3(0, 0, 0.1);
+            let targetFov = 65;
+
+        let interactiveMeshGroup = [];
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+
+        let shootingStars = [];
+        let flameParticlesSystem;
+        let bioluminescentParticles;
+        let celestial3DGroups = {};
+// --- Atmospheric Fresnel Glow Material Generator ---
+function createAtmosphereMaterial(colorHex) {
+    return new THREE.ShaderMaterial({
+        uniforms: {
+            color: { value: new THREE.Color(colorHex) }
+        },
+        vertexShader: `
+            varying vec3 vNormal;
+            varying vec3 vPositionNormal;
+            void main() {
+                vNormal = normalize(normalMatrix * normal);
+                vPositionNormal = normalize((modelViewMatrix * vec4(position, 1.0)).xyz);
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            varying vec3 vNormal;
+            varying vec3 vPositionNormal;
+            uniform vec3 color;
+            void main() {
+                float intensity = pow(0.60 - dot(vNormal, vPositionNormal), 2.5);
+                gl_FragColor = vec4(color, 1.0) * intensity;
+            }
+        `,
+        blending: THREE.AdditiveBlending,
+        side: THREE.BackSide,
+        transparent: true
+    });
+}
+        function initSanctuary3D() {
+            container = document.getElementById('canvas-container');
+
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x020308, 0.0008);
+
+            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.target = new THREE.Vector3(0, 0, 0);
+            camera.position.set(0, 0, 0.1);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.3;
+           container.appendChild(renderer.domElement);
+            // --- ADD BLOOM POST-PROCESSING HERE ---
+const renderScene = new THREE.RenderPass(scene, camera);
+const bloomPass = new THREE.UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    0.8,  // bloom strength
+    0.4,  // bloom radius
+    0.85  // threshold
+);
+
+composer = new THREE.EffectComposer(renderer);
+composer.addPass(renderScene);
+composer.addPass(bloomPass);
+// --------------------------------------
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0x2e3856, 1.2);
+            scene.add(ambientLight);
+
+            const sunPointLight = new THREE.PointLight(0xfef08a, 2.5, 800);
+            sunPointLight.position.set(230, 35, 90);
+            scene.add(sunPointLight);
+
+            createSkyDome();
+            createStarFields();
+            createNebulae();
+            createBioluminescentParticles();
+            create3DObjects();
+            createFloatingHTMLLabels();
+
+            setupInteractionEvents();
+            initRadarMapUI();
+            animate();
+        }
+
+        function createSkyDome() {
+            const skyGeo = new THREE.SphereGeometry(900, 60, 40);
+            const skyMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    topColor: { value: new THREE.Color(0x050716) },
+                    midColor: { value: new THREE.Color(0x0a0f2b) },
+                    bottomColor: { value: new THREE.Color(0x020308) }
+                },
+                vertexShader: `
+                    varying vec3 vWorldPosition;
+                    void main() {
+                        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+                        vWorldPosition = worldPosition.xyz;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 topColor;
+                    uniform vec3 midColor;
+                    uniform vec3 bottomColor;
+                    varying vec3 vWorldPosition;
+                    void main() {
+                        float h = normalize(vWorldPosition).y;
+                        vec3 col = mix(bottomColor, midColor, max(0.0, h + 0.3));
+                        col = mix(col, topColor, max(0.0, h));
+                        gl_FragColor = vec4(col, 1.0);
+                    }
+                `,
+                side: THREE.BackSide
+            });
+            scene.add(new THREE.Mesh(skyGeo, skyMat));
+        }
+
+        function createStarFields() {
+            const count = 4500;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(count * 3);
+
+            for (let i = 0; i < count; i++) {
+                const radius = 600 + Math.random() * 250;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos((Math.random() * 2) - 1);
+
+                pos[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                pos[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                pos[i * 3 + 2] = radius * Math.cos(phi);
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const starTex = createGlowTexture('rgba(255, 255, 255, 0.95)', 64);
+            const mat = new THREE.PointsMaterial({
+                size: 2.6,
+                map: starTex,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            scene.add(new THREE.Points(geo, mat));
+        }
+
+        function createNebulae() {
+            const colors = [
+                'rgba(168, 85, 247, 0.3)',
+                'rgba(52, 211, 153, 0.22)',
+                'rgba(99, 102, 241, 0.28)',
+                'rgba(254, 240, 138, 0.22)'
+            ];
+
+            for (let i = 0; i < 8; i++) {
+                const texture = createGlowTexture(colors[i % colors.length], 256);
+                const mat = new THREE.SpriteMaterial({
+                    map: texture,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    opacity: 0.6
+                });
+                const sprite = new THREE.Sprite(mat);
+                const radius = 450 + Math.random() * 100;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI * 0.8;
+
+                sprite.position.set(
+                    radius * Math.sin(phi) * Math.cos(theta),
+                    radius * Math.cos(phi),
+                    radius * Math.sin(phi) * Math.sin(theta)
+                );
+                const scale = 300 + Math.random() * 200;
+                sprite.scale.set(scale, scale, 1);
+                scene.add(sprite);
+            }
+        }
+
+        function createBioluminescentParticles() {
+            const count = 220;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(count * 3);
+            const initialPos = [];
+
+            for (let i = 0; i < count; i++) {
+                const x = (Math.random() - 0.5) * 260;
+                const y = (Math.random() - 0.5) * 180;
+                const z = (Math.random() - 0.5) * 260;
+                pos[i * 3] = x;
+                pos[i * 3 + 1] = y;
+                pos[i * 3 + 2] = z;
+                initialPos.push({ x, y, z, speed: 0.2 + Math.random() * 0.5, offset: Math.random() * Math.PI * 2 });
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const spriteTex = createGlowTexture('rgba(254, 240, 138, 0.85)', 64);
+            const mat = new THREE.PointsMaterial({
+                size: 3.5,
+                map: spriteTex,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            bioluminescentParticles = new THREE.Points(geo, mat);
+            bioluminescentParticles.userData = { initialPos };
+            scene.add(bioluminescentParticles);
+        }
+
+        // --- Building Detailed 3D Celestial Objects ---
+        function create3DObjects() {
+            ALL_FEATURES.forEach(feat => {
+                const group = new THREE.Group();
+                group.position.set(feat.pos.x, feat.pos.y, feat.pos.z);
+                celestial3DGroups[feat.id] = group;
+
+                if (feat.id === 'earth-pin') {
+                    // Procedural Earth Globe
+                    const earthGeo = new THREE.SphereGeometry(14, 32, 32);
+                    const earthMat = new THREE.MeshStandardMaterial({
+                        map: createEarthTexture(),
+                        roughness: 0.6,
+                        metalness: 0.1
+                    });
+                    const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+                    group.add(earthMesh);
+
+                    // 3D Volumetric Fresnel Atmosphere
+const earthAtmosphere = new THREE.Mesh(
+    new THREE.SphereGeometry(15.4, 32, 32),
+    createAtmosphereMaterial(0x38bdf8)
+);
+group.add(earthAtmosphere);
+
+                    // Orbiting Moon
+                    const moonOrbitGroup = new THREE.Group();
+                    const moonGeo = new THREE.SphereGeometry(3.5, 16, 16);
+                    const moonMat = new THREE.MeshStandardMaterial({ map: createMoonTexture(), roughness: 0.9 });
+                    const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+                    moonMesh.position.set(28, 0, 0);
+                    moonOrbitGroup.add(moonMesh);
+                    group.add(moonOrbitGroup);
+                    group.userData.moonOrbitGroup = moonOrbitGroup;
+
+                    earthMesh.userData = { featureId: feat.id };
+                    interactiveMeshGroup.push(earthMesh);
+
+                } else if (feat.id === 'central-sun') {
+                    // Sun Core Sphere
+                    const sunGeo = new THREE.SphereGeometry(18, 32, 32);
+                    const sunMat = new THREE.MeshBasicMaterial({ color: 0xffea00 });
+                    const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+                    group.add(sunMesh);
+
+                    // Sun Corona Glow Sprites
+                    const coronaTex = createGlowTexture('rgba(254, 240, 138, 0.95)', 256);
+                    const coronaSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: coronaTex, transparent: true, blending: THREE.AdditiveBlending }));
+                    coronaSprite.scale.set(90, 90, 1);
+                    group.add(coronaSprite);
+
+                    // Prominence Ring
+                    const ringGeo = new THREE.RingGeometry(22, 28, 32);
+                    const ringMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, side: THREE.DoubleSide, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending });
+                    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+                    ringMesh.rotation.x = Math.PI / 3;
+                    group.add(ringMesh);
+
+                    sunMesh.userData = { featureId: feat.id };
+                    interactiveMeshGroup.push(sunMesh);
+
+                } else if (feat.id === 'strawberry-planet') {
+                    // Crystalline Pink Planet
+                    const planetGeo = new THREE.SphereGeometry(12, 32, 32);
+                    const planetMat = new THREE.MeshStandardMaterial({
+                        map: createStrawberryTexture(),
+                        roughness: 0.3,
+                        metalness: 0.2
+                    });
+                    const planetMesh = new THREE.Mesh(planetGeo, planetMat);
+                    group.add(planetMesh);
+const strawberryAtmosphere = new THREE.Mesh(
+    new THREE.SphereGeometry(13.2, 32, 32),
+    createAtmosphereMaterial(0xf43f5e)
+);
+group.add(strawberryAtmosphere);
+                    // Saturn-like Glittering Stardust Particle Rings
+                    const ringParticlesCount = 600;
+                    const ringGeo = new THREE.BufferGeometry();
+                    const ringPos = new Float32Array(ringParticlesCount * 3);
+
+                    for (let i = 0; i < ringParticlesCount; i++) {
+                        const r = 18 + Math.random() * 16;
+                        const angle = Math.random() * Math.PI * 2;
+                        ringPos[i * 3] = r * Math.cos(angle);
+                        ringPos[i * 3 + 1] = (Math.random() - 0.5) * 2;
+                        ringPos[i * 3 + 2] = r * Math.sin(angle);
+                    }
+
+                    ringGeo.setAttribute('position', new THREE.BufferAttribute(ringPos, 3));
+                    const ringTex = createGlowTexture('rgba(244, 63, 94, 0.9)', 64);
+                    const ringParticles = new THREE.Points(ringGeo, new THREE.PointsMaterial({
+                        size: 2.5,
+                        map: ringTex,
+                        transparent: true,
+                        blending: THREE.AdditiveBlending
+                    }));
+                    ringParticles.rotation.x = Math.PI / 6;
+                    group.add(ringParticles);
+
+                    planetMesh.userData = { featureId: feat.id };
+                    interactiveMeshGroup.push(planetMesh);
+
+                } else if (feat.id === 'matcha-planet') {
+                    // Emerald Marble Planet
+                    const planetGeo = new THREE.SphereGeometry(13, 32, 32);
+                    const planetMat = new THREE.MeshStandardMaterial({
+                        map: createMatchaTexture(),
+                        roughness: 0.4,
+                        metalness: 0.1
+                    });
+                    const planetMesh = new THREE.Mesh(planetGeo, planetMat);
+                    group.add(planetMesh);
+
+                    // 3D Volumetric Fresnel Atmosphere
+// 3D Volumetric Fresnel Atmosphere
+const matchaAtmosphere = new THREE.Mesh(
+    new THREE.SphereGeometry(14.3, 32, 32),
+    createAtmosphereMaterial(0x34d399)
+);
+
+group.add(matchaAtmosphere);
+
+                    planetMesh.userData = { featureId: feat.id };
+                    interactiveMeshGroup.push(planetMesh);
+
+                } else if (feat.id === 'shield-constellation') {
+                    // Crystalline Star Nexus & Laser Connections
+                    const starNodes = [
+                        new THREE.Vector3(0, 12, 0),
+                        new THREE.Vector3(-14, 0, 8),
+                        new THREE.Vector3(14, 0, 8),
+                        new THREE.Vector3(-10, -14, -6),
+                        new THREE.Vector3(10, -14, -6)
+                    ];
+
+                    starNodes.forEach(pt => {
+                        const nodeGeo = new THREE.OctahedronGeometry(2.5, 0);
+                        const nodeMat = new THREE.MeshBasicMaterial({ color: 0xc084fc });
+                        const nodeMesh = new THREE.Mesh(nodeGeo, nodeMat);
+                        nodeMesh.position.copy(pt);
+                        group.add(nodeMesh);
+
+                        const spriteTex = createGlowTexture('rgba(192, 132, 252, 0.9)', 64);
+                        const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: spriteTex, transparent: true, blending: THREE.AdditiveBlending }));
+                        sprite.position.copy(pt);
+                        sprite.scale.set(15, 15, 1);
+                        group.add(sprite);
+
+                        nodeMesh.userData = { featureId: feat.id };
+                        interactiveMeshGroup.push(nodeMesh);
+                    });
+
+                    // Constellation Connecting Lines
+                    const lineGeo = new THREE.BufferGeometry().setFromPoints([
+                        starNodes[0], starNodes[1],
+                        starNodes[0], starNodes[2],
+                        starNodes[1], starNodes[3],
+                        starNodes[2], starNodes[4],
+                        starNodes[3], starNodes[4],
+                        starNodes[1], starNodes[2]
+                    ]);
+                    const lineMat = new THREE.LineBasicMaterial({ color: 0xc084fc, transparent: true, opacity: 0.7 });
+                    const lines = new THREE.LineSegments(lineGeo, lineMat);
+                    group.add(lines);
+
+                } else if (feat.id === 'worry-release') {
+                    // Ember Orb + Rising Ember Particles
+                    const emberGeo = new THREE.SphereGeometry(7, 24, 24);
+                    const emberMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+                    const emberMesh = new THREE.Mesh(emberGeo, emberMat);
+                    group.add(emberMesh);
+
+                    const glowTex = createGlowTexture('rgba(245, 158, 11, 0.95)', 128);
+                    const glowSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, transparent: true, blending: THREE.AdditiveBlending }));
+                    glowSprite.scale.set(50, 50, 1);
+                    group.add(glowSprite);
+
+                    // Rising Flame Embers Particle Emitter
+                    const flameCount = 40;
+                    const flameGeo = new THREE.BufferGeometry();
+                    const flamePos = new Float32Array(flameCount * 3);
+                    const flameData = [];
+
+                    for (let i = 0; i < flameCount; i++) {
+                        const x = (Math.random() - 0.5) * 8;
+                        const y = Math.random() * 20;
+                        const z = (Math.random() - 0.5) * 8;
+                        flamePos[i * 3] = x;
+                        flamePos[i * 3 + 1] = y;
+                        flamePos[i * 3 + 2] = z;
+                        flameData.push({ x, y, z, speed: 0.3 + Math.random() * 0.4 });
+                    }
+
+                    flameGeo.setAttribute('position', new THREE.BufferAttribute(flamePos, 3));
+                    const flameMat = new THREE.PointsMaterial({
+                        size: 3.0,
+                        map: createGlowTexture('rgba(254, 240, 138, 0.9)', 64),
+                        transparent: true,
+                        blending: THREE.AdditiveBlending
+                    });
+
+                    flameParticlesSystem = new THREE.Points(flameGeo, flameMat);
+                    flameParticlesSystem.userData = { flameData };
+                    group.add(flameParticlesSystem);
+
+                    emberMesh.userData = { featureId: feat.id };
+                    interactiveMeshGroup.push(emberMesh);
+
+                } else if (feat.id === 'letter-scroll') {
+                    // Golden Artifact Scroll
+                    const scrollGeo = new THREE.CylinderGeometry(2.5, 2.5, 14, 16);
+                    const scrollMat = new THREE.MeshStandardMaterial({ color: 0xfef08a, roughness: 0.3, metalness: 0.7 });
+                    const scrollMesh = new THREE.Mesh(scrollGeo, scrollMat);
+                    scrollMesh.rotation.z = Math.PI / 4;
+                    group.add(scrollMesh);
+
+                    const glowTex = createGlowTexture('rgba(168, 85, 247, 0.9)', 128);
+                    const glowSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, transparent: true, blending: THREE.AdditiveBlending }));
+                    glowSprite.scale.set(40, 40, 1);
+                    group.add(glowSprite);
+
+                    scrollMesh.userData = { featureId: feat.id };
+                    interactiveMeshGroup.push(scrollMesh);
+
+                } else if (feat.id === 'breathing-moon') {
+                    // Guided Breathing 3D Moon
+                    const moonGeo = new THREE.SphereGeometry(22, 32, 32);
+                    const moonMat = new THREE.MeshStandardMaterial({
+                        map: createMoonTexture(),
+                        roughness: 0.8
+                    });
+                    const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+                    group.add(moonMesh);
+
+                    const auraTex = createGlowTexture('rgba(52, 211, 153, 0.75)', 256);
+                    const auraSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: auraTex, transparent: true, blending: THREE.AdditiveBlending }));
+                    auraSprite.scale.set(130, 130, 1);
+                    group.add(auraSprite);
+
+                    moonMesh.userData = { featureId: feat.id };
+                    interactiveMeshGroup.push(moonMesh);
+                }
+
+                scene.add(group);
+            });
+        }
+
+        // --- 3D Floating Labels System (Hidden Names by default, revealed on hover) ---
+        function createFloatingHTMLLabels() {
+            const labelsContainer = document.getElementById('labels-container');
+            labelsContainer.innerHTML = '';
+
+            ALL_FEATURES.forEach(feat => {
+                const labelDiv = document.createElement('div');
+                labelDiv.id = `sky-label-${feat.id}`;
+                labelDiv.className = 'sky-label';
+                labelDiv.onclick = () => teleportToFeature(feat.id, true);
+
+                labelDiv.innerHTML = `
+                    <div class="sky-label-inner">
+                        <span class="sky-label-icon text-sm">${feat.icon}</span>
+                        <span class="sky-label-text text-xs text-slate-100 font-medium">${feat.name}</span>
+                    </div>
+                `;
+                labelsContainer.appendChild(labelDiv);
+            });
+        }
+
+        function updateHTMLLabelsPosition() {
+            const widthHalf = window.innerWidth / 2;
+            const heightHalf = window.innerHeight / 2;
+
+            ALL_FEATURES.forEach(feat => {
+                const labelEl = document.getElementById(`sky-label-${feat.id}`);
+                if (!labelEl) return;
+
+                const pos = new THREE.Vector3(feat.pos.x, feat.pos.y, feat.pos.z);
+                pos.project(camera);
+
+                // Check if object is in front of camera
+                if (pos.z < 1) {
+                    const x = (pos.x * widthHalf) + widthHalf;
+                    const y = -(pos.y * heightHalf) + heightHalf;
+
+                    labelEl.style.transform = `translate(-50%, -100%) translate3d(${x}px, ${y}px, 0px)`;
+                    labelEl.style.opacity = '1';
+                } else {
+                    labelEl.style.opacity = '0';
+                }
+            });
+        }
+
+        // --- Interactive FX: Stardust Explosion ---
+        function triggerStardustExplosion(point) {
+            const count = 40;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(count * 3);
+            const velocities = [];
+
+            for (let i = 0; i < count; i++) {
+                pos[i * 3] = point.x;
+                pos[i * 3 + 1] = point.y;
+                pos[i * 3 + 2] = point.z;
+
+                velocities.push(new THREE.Vector3(
+                    (Math.random() - 0.5) * 3.5,
+                    Math.random() * 4.0,
+                    (Math.random() - 0.5) * 3.5
+                ));
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const spriteTex = createGlowTexture('rgba(254, 240, 138, 0.95)', 64);
+            const mat = new THREE.PointsMaterial({
+                size: 5.0,
+                map: spriteTex,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            const pSystem = new THREE.Points(geo, mat);
+            pSystem.userData = { velocities, life: 1.0 };
+            scene.add(pSystem);
+
+            const animateStardust = () => {
+                if (pSystem.userData.life <= 0) {
+                    scene.remove(pSystem);
+                    geo.dispose();
+                    mat.dispose();
+                    return;
+                }
+                pSystem.userData.life -= 0.02;
+                mat.opacity = pSystem.userData.life;
+
+                const positions = pSystem.geometry.attributes.position.array;
+                for (let i = 0; i < count; i++) {
+                    positions[i * 3] += velocities[i].x;
+                    positions[i * 3 + 1] += velocities[i].y;
+                    positions[i * 3 + 2] += velocities[i].z;
+                }
+                pSystem.geometry.attributes.position.needsUpdate = true;
+                requestAnimationFrame(animateStardust);
+            };
+            animateStardust();
+        }
+
+        function triggerShootingStar() {
+            const startPos = new THREE.Vector3(
+                (Math.random() - 0.5) * 450,
+                160 + Math.random() * 140,
+                (Math.random() - 0.5) * 450
+            );
+
+            const endPos = startPos.clone().add(new THREE.Vector3(
+                (Math.random() - 0.5) * 300,
+                -100 - Math.random() * 100,
+                (Math.random() - 0.5) * 300
+            ));
+
+            const points = [startPos, startPos.clone()];
+            const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+            const lineMat = new THREE.LineBasicMaterial({ color: 0xfef08a, transparent: true, opacity: 1.0 });
+
+            const line = new THREE.Line(lineGeo, lineMat);
+            line.userData = { startPos, endPos, progress: 0, speed: 0.02 + Math.random() * 0.02 };
+            scene.add(line);
+            shootingStars.push(line);
+        }
+
+        // --- Interaction & Touch / Mouse Controls ---
+        function setupInteractionEvents() {
+            window.addEventListener('resize', onWindowResize);
+            container.addEventListener('pointerdown', onPointerDown);
+            container.addEventListener('pointermove', onPointerMove);
+            container.addEventListener('pointerup', onPointerUp);
+            container.addEventListener('wheel', onWindowWheel, { passive: true });
+        }
+
+        function onPointerDown(e) {
+            isUserInteracting = true;
+            onPointerDownPointerX = e.clientX;
+            onPointerDownPointerY = e.clientY;
+            onPointerDownLon = lon;
+            onPointerDownLat = lat;
+            pointerDragDistance = 0;
+        }
+
+        function onPointerMove(e) {
+            if (isUserInteracting) {
+                const deltaX = e.clientX - onPointerDownPointerX;
+                const deltaY = e.clientY - onPointerDownPointerY;
+                pointerDragDistance = Math.hypot(deltaX, deltaY);
+
+                targetLon = (onPointerDownPointerX - e.clientX) * 0.15 + onPointerDownLon;
+                targetLat = (e.clientY - onPointerDownPointerY) * 0.15 + onPointerDownLat;
+            }
+
+            // Raycaster Hover Detection (Expands 3D Label Name on hovering 3D Object)
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(interactiveMeshGroup);
+
+            // Clear previous hover states
+            document.querySelectorAll('.sky-label').forEach(el => el.classList.remove('is-hovered'));
+
+            if (intersects.length > 0) {
+                const hitObj = intersects[0].object;
+                const fId = hitObj.userData.featureId;
+                if (fId) {
+                    container.style.cursor = 'pointer';
+                    const targetLabel = document.getElementById(`sky-label-${fId}`);
+                    if (targetLabel) {
+                        targetLabel.classList.add('is-hovered');
+                    }
+                }
+            } else {
+                container.style.cursor = isUserInteracting ? 'grabbing' : 'grab';
+            }
+        }
+
+        function onPointerUp(e) {
+            isUserInteracting = false;
+
+            if (pointerDragDistance < 8) {
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(interactiveMeshGroup);
+
+                if (intersects.length > 0) {
+                    const hitObj = intersects[0].object;
+                    const fId = hitObj.userData.featureId;
+                    if (fId) {
+                        triggerFeatureById(fId, intersects[0].point);
+                    }
+                }
+            }
+        }
+
+        function onWindowWheel(e) {
+            camera.fov = Math.max(40, Math.min(90, camera.fov + e.deltaY * 0.03));
+            camera.updateProjectionMatrix();
+        }
+
+        function triggerFeatureById(featureId, worldPoint = null) {
+            const feat = ALL_FEATURES.find(f => f.id === featureId);
+            if (!feat) return;
+
+            activeFeatureId = feat.id;
+            updateMapListUI();
+
+            if (feat.type === 'orb') {
+                openOrbModal(feat);
+            } else if (feat.type === 'release') {
+                openReleaseModal();
+            } else if (feat.type === 'letter') {
+                openLetterModal();
+            } else if (feat.type === 'breathe') {
+                startGuidedBreathing();
+            }
+
+            audioEngine.playSoftChime();
+
+            if (!worldPoint) {
+                worldPoint = new THREE.Vector3(feat.pos.x, feat.pos.y, feat.pos.z);
+            }
+            triggerStardustExplosion(worldPoint);
+        }
+
+        function getShortestAngleDelta(current, target) {
+            let diff = (target - current) % 360;
+            if (diff > 180) diff -= 360;
+            if (diff < -180) diff += 360;
+            return diff;
+        }
+
+            function teleportToFeature(featureId, triggerAction = true) {
+    const feat = ALL_FEATURES.find(f => f.id === featureId);
+    if (!feat) return;
+
+    const deltaLon = getShortestAngleDelta(lon, feat.lon);
+    targetLon = lon + deltaLon;
+    targetLat = feat.lat;
+
+    // --- CINEMATIC FLY-TO LOGIC ---
+    const featureVec = new THREE.Vector3(feat.pos.x, feat.pos.y, feat.pos.z);
+    const dir = featureVec.clone().normalize();
+    // Glide camera 45% closer to the target object
+    targetCameraPos.copy(dir.multiplyScalar(featureVec.length() * 0.45));
+    targetFov = 42; // Focal zoom
+    // ------------------------------
+
+    activeFeatureId = feat.id;
+    updateMapListUI();
+    audioEngine.playSoftChime();
+
+    if (triggerAction) {
+        setTimeout(() => {
+            triggerFeatureById(featureId);
+        }, 400);
+    }
+}
+
+// Add this helper function right below teleportToFeature:
+function resetCameraFocus() {
+    targetCameraPos.set(0, 0, 0.1);
+    targetFov = 65;
+    activeFeatureId = null;
+    updateMapListUI();
+}
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                if (composer) composer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            // --- Main Render & Animation Loop ---
+            function animate() {
+                requestAnimationFrame(animate);
+                const elapsedTime = clock.getElapsedTime();
+
+                lat = Math.max(-85, Math.min(85, lat + (targetLat - lat) * 0.08));
+                lon += (targetLon - lon) * 0.08;
+
+                if (!isUserInteracting) targetLon += 0.012;
+
+                const phi = THREE.MathUtils.degToRad(90 - lat);
+                const theta = THREE.MathUtils.degToRad(lon);
+
+               camera.target.x = 500 * Math.sin(phi) * Math.cos(theta);
+camera.target.y = 500 * Math.cos(phi);
+camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
+
+// --- SMOOTH CAMERA FLY-TO & FOV LERP ---
+camera.position.lerp(targetCameraPos, 0.04);
+if (Math.abs(camera.fov - targetFov) > 0.1) {
+    camera.fov += (targetFov - camera.fov) * 0.04;
+    camera.updateProjectionMatrix();
+}
+// ---------------------------------------
+
+camera.lookAt(camera.target);
+
+                // Rotate Earth Orbiting Moon
+                if (celestial3DGroups['earth-pin'] && celestial3DGroups['earth-pin'].userData.moonOrbitGroup) {
+                    celestial3DGroups['earth-pin'].userData.moonOrbitGroup.rotation.y = elapsedTime * 0.5;
+                }
+
+                // Animate Flame Embers Emitter
+                if (flameParticlesSystem) {
+                    const pos = flameParticlesSystem.geometry.attributes.position.array;
+                    const data = flameParticlesSystem.userData.flameData;
+                    for (let i = 0; i < data.length; i++) {
+                        data[i].y += data[i].speed;
+                        if (data[i].y > 28) data[i].y = 0;
+                        pos[i * 3 + 1] = data[i].y;
+                    }
+                    flameParticlesSystem.geometry.attributes.position.needsUpdate = true;
+            }
+
+            // Animate Bioluminescent Space Dust
+            if (bioluminescentParticles) {
+                const pos = bioluminescentParticles.geometry.attributes.position.array;
+                const init = bioluminescentParticles.userData.initialPos;
+                for (let i = 0; i < init.length; i++) {
+                    pos[i * 3 + 1] = init[i].y + Math.sin(elapsedTime * init[i].speed + init[i].offset) * 6;
+                    pos[i * 3] = init[i].x + Math.cos(elapsedTime * 0.25 + init[i].offset) * 4;
+                }
+                bioluminescentParticles.geometry.attributes.position.needsUpdate = true;
+            }
+
+            // Animate Shooting Stars
+            for (let i = shootingStars.length - 1; i >= 0; i--) {
+                const ss = shootingStars[i];
+                ss.userData.progress += ss.userData.speed;
+                const currentPos = ss.userData.startPos.clone().lerp(ss.userData.endPos, ss.userData.progress);
+                const positions = ss.geometry.attributes.position.array;
+
+                positions[0] = currentPos.x;
+                positions[1] = currentPos.y;
+                positions[2] = currentPos.z;
+
+                const tailProgress = Math.max(0, ss.userData.progress - 0.25);
+                const tailPos = ss.userData.startPos.clone().lerp(ss.userData.endPos, tailProgress);
+                positions[3] = tailPos.x;
+                positions[4] = tailPos.y;
+                positions[5] = tailPos.z;
+
+                ss.geometry.attributes.position.needsUpdate = true;
+
+                if (ss.userData.progress >= 1.2) {
+                    scene.remove(ss);
+                    ss.geometry.dispose();
+                    ss.material.dispose();
+                    shootingStars.splice(i, 1);
+                }
+            }
+
+            if (Math.random() < 0.008) triggerShootingStar();
+
+            updateHTMLLabelsPosition();
+            drawRadarMap();
+            composer.render();
+        }
+
+        const clock = new THREE.Clock();
+
+        // --- Celestial 2D Radar Map ---
+        function initRadarMapUI() {
+            const listContainer = document.getElementById('map-feature-list');
+            listContainer.innerHTML = '';
+
+            ALL_FEATURES.forEach(feat => {
+                const btn = document.createElement('button');
+                btn.id = `map-item-${feat.id}`;
+                btn.className = 'w-full text-left p-2 rounded-xl glass-btn flex items-center justify-between border-slate-700/40 hover:border-amber-400/50 transition-all duration-200 group';
+                btn.onclick = () => teleportToFeature(feat.id, true);
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm p-1 rounded-lg bg-slate-900/60 border border-white/10">${feat.icon}</span>
+                        <div>
+                            <div class="text-xs text-slate-100 font-medium group-hover:text-amber-200">${feat.name}</div>
+                            <div class="text-[10px] text-indigo-300/70 font-light">${feat.tag}</div>
+                        </div>
+                    </div>
+                    <span class="text-[10px] text-amber-300/80 opacity-0 group-hover:opacity-100 transition-opacity">Focus ➔</span>
+                `;
+                listContainer.appendChild(btn);
+            });
+
+            // Radar Click Teleporting
+            const radarCanvas = document.getElementById('radar-canvas');
+            radarCanvas.addEventListener('click', (e) => {
+                const rect = radarCanvas.getBoundingClientRect();
+                const clickX = e.clientX - rect.left - rect.width / 2;
+                const clickY = e.clientY - rect.top - rect.height / 2;
+                const clickAngleDeg = Math.atan2(clickY, clickX) * (180 / Math.PI);
+
+                let closest = null;
+                let minDiff = Infinity;
+                ALL_FEATURES.forEach(f => {
+                    const diff = Math.abs(getShortestAngleDelta(clickAngleDeg, f.lon));
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closest = f;
+                    }
+                });
+
+                if (closest && minDiff < 45) {
+                    teleportToFeature(closest.id, true);
+                }
+            });
+        }
+
+        function updateMapListUI() {
+            ALL_FEATURES.forEach(feat => {
+                const el = document.getElementById(`map-item-${feat.id}`);
+                if (!el) return;
+                if (feat.id === activeFeatureId) {
+                    el.classList.add('bg-amber-500/20', 'border-amber-400/80', 'shadow-[0_0_15px_rgba(245,158,11,0.2)]');
+                } else {
+                    el.classList.remove('bg-amber-500/20', 'border-amber-400/80', 'shadow-[0_0_15px_rgba(245,158,11,0.2)]');
+                }
+            });
+        }
+
+        function drawRadarMap() {
+            const canvas = document.getElementById('radar-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+            const radius = w / 2 - 12;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Radar Circle
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(6, 10, 25, 0.88)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(168, 85, 247, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Rings
+            [0.35, 0.7].forEach(rRatio => {
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius * rRatio, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(99, 102, 241, 0.18)';
+                ctx.stroke();
+            });
+
+            // Axes
+            ctx.beginPath();
+            ctx.moveTo(cx - radius, cy); ctx.lineTo(cx + radius, cy);
+            ctx.moveTo(cx, cy - radius); ctx.lineTo(cx, cy + radius);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.stroke();
+
+            // Radar Sweep
+            const sweepAngle = (clock.getElapsedTime() * 0.9) % (Math.PI * 2);
+            const sweepGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+            sweepGrad.addColorStop(0, 'rgba(245, 158, 11, 0.3)');
+            sweepGrad.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
+
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, radius, sweepAngle - 0.45, sweepAngle);
+            ctx.closePath();
+            ctx.fillStyle = sweepGrad;
+            ctx.fill();
+
+            // Camera View Field Cone (FOV)
+            const camAngleRad = (lon * Math.PI) / 180;
+            const fovRad = (40 * Math.PI) / 180;
+
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, radius * 0.95, camAngleRad - fovRad / 2, camAngleRad + fovRad / 2);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.2)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+
+            // Nodes
+            ALL_FEATURES.forEach(feat => {
+                const nodeAngleRad = (feat.lon * Math.PI) / 180;
+                const distRatio = Math.max(0.25, Math.min(0.85, 0.6 + (feat.lat / 180)));
+                const nx = cx + Math.cos(nodeAngleRad) * radius * distRatio;
+                const ny = cy + Math.sin(nodeAngleRad) * radius * distRatio;
+
+                ctx.beginPath();
+                ctx.arc(nx, ny, feat.id === activeFeatureId ? 5.5 : 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = feat.color;
+                ctx.shadowColor = feat.color;
+                ctx.shadowBlur = feat.id === activeFeatureId ? 14 : 6;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                if (feat.id === activeFeatureId) {
+                    ctx.beginPath();
+                    ctx.arc(nx, ny, 8.5, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#fef08a';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            });
+        }
+
+        // --- Modals Logic ---
+        function openOrbModal(feat) {
+            document.getElementById('orb-icon').innerText = feat.icon;
+            document.getElementById('orb-tag').innerText = feat.tag;
+            document.getElementById('orb-title').innerText = feat.name;
+            document.getElementById('orb-message').innerText = `"${feat.message}"`;
+            document.getElementById('orb-subtext').innerText = feat.subtext;
+
+            const modal = document.getElementById('orb-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+            modal.classList.add('opacity-100', 'pointer-events-auto', 'scale-100');
+        }
+
+        function openReleaseModal() {
+            renderHeavyThoughtChips();
+            const modal = document.getElementById('release-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+            modal.classList.add('opacity-100', 'pointer-events-auto', 'scale-100');
+        }
+
+        function createTextDisintegrationParticles(element) {
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    const particleCount = 28;
+
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'disintegrate-particle';
+
+        // Spawn across the element's bounding box
+        const x = rect.left + Math.random() * rect.width;
+        const y = rect.top + Math.random() * rect.height;
+        const size = Math.random() * 5 + 2;
+
+        // Trajectory vector
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 40 + Math.random() * 60;
+        const dx = `${Math.cos(angle) * distance}px`;
+        const dy = `${Math.sin(angle) * distance - 20}px`; // Upward drift
+
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.backgroundColor = i % 2 === 0 ? '#fef08a' : '#f59e0b';
+        particle.style.boxShadow = '0 0 10px #fef08a';
+        particle.style.setProperty('--dx', dx);
+        particle.style.setProperty('--dy', dy);
+
+        document.body.appendChild(particle);
+
+        setTimeout(() => particle.remove(), 850);
+    }
+}
+
+function renderHeavyThoughtChips() {
+    const container = document.getElementById('heavy-chips-container');
+    container.innerHTML = '';
+
+    if (heavyThoughts.length === 0) {
+        container.innerHTML = `<span class="text-xs text-amber-200 glow-gold py-4">✨ All heavy thoughts released! Your mind is free to rest tonight.</span>`;
+        return;
+    }
+
+    heavyThoughts.forEach((thought, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'glass-btn px-3.5 py-1.5 rounded-full text-xs text-amber-200/90 border-amber-500/30 hover:border-amber-400 flex items-center gap-1.5 transition-all duration-300';
+        btn.innerHTML = `<span>💭 ${thought}</span>`;
+        btn.onclick = (e) => releaseThoughtAction(idx, e.currentTarget); // <-- Updated here
+        container.appendChild(btn);
+    });
+}
+
+function releaseThoughtAction(idx = null, targetElement = null) {
+    if (targetElement) {
+        createTextDisintegrationParticles(targetElement);
+    } else {
+        const input = document.getElementById('custom-thought-input');
+        createTextDisintegrationParticles(input);
+    }
+
+    const centerPoint = camera.target.clone().normalize().multiplyScalar(150);
+    triggerStardustExplosion(centerPoint);
+    audioEngine.playSoftChime();
+
+    if (idx !== null) {
+        setTimeout(() => {
+            heavyThoughts.splice(idx, 1);
+            renderHeavyThoughtChips();
+        }, 200);
+    } else {
+        renderHeavyThoughtChips();
+    }
+}
+ 
+
+        function openLetterModal() {
+            const modal = document.getElementById('letter-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none', 'scale-95');
+            modal.classList.add('opacity-100', 'pointer-events-auto', 'scale-100');
+        }
+
+        // Breathing Ritual Logic
+        let breathingTimer = null;
+        const breathingPhases = [
+            { text: "Inhale Peace", subtext: "Fill your lungs softly... let go of academic pressure", duration: 4000 },
+            { text: "Hold the Calm", subtext: "Feel the quietness resting inside your heart", duration: 4000 },
+            { text: "Exhale Exhaustion", subtext: "Release all worries... let your body sink into bed", duration: 6000 }
+        ];
+
+        function startGuidedBreathing() {
+            const overlay = document.getElementById('breathing-overlay');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100', 'pointer-events-auto');
+
+            let currentIdx = 0;
+            const updatePhase = () => {
+                const phase = breathingPhases[currentIdx];
+                document.getElementById('breathing-phase').innerText = phase.text;
+                document.getElementById('breathing-subtext').innerText = phase.subtext;
+                currentIdx = (currentIdx + 1) % breathingPhases.length;
+                breathingTimer = setTimeout(updatePhase, phase.duration);
+            };
+            updatePhase();
+        }
+
+        function stopGuidedBreathing() {
+            clearTimeout(breathingTimer);
+            const overlay = document.getElementById('breathing-overlay');
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // --- DOM Event Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            initSanctuary3D();
+
+            // Toggle Celestial Radar Map Drawer
+            const mapDrawer = document.getElementById('map-drawer');
+            document.getElementById('btn-map-toggle').addEventListener('click', () => {
+                const isOpen = !mapDrawer.classList.contains('translate-x-[120%]');
+                if (isOpen) {
+                    mapDrawer.classList.add('translate-x-[120%]', 'opacity-0');
+                } else {
+                    mapDrawer.classList.remove('translate-x-[120%]', 'opacity-0');
+                }
+            });
+
+            document.getElementById('close-map-drawer').addEventListener('click', () => {
+                mapDrawer.classList.add('translate-x-[120%]', 'opacity-0');
+            });
+
+            // Custom Thought Release Handlers
+            document.getElementById('btn-release-custom').addEventListener('click', () => {
+                const input = document.getElementById('custom-thought-input');
+                if (input.value.trim() !== '') {
+                    releaseThoughtAction();
+                    input.value = '';
+                }
+            });
+
+            document.getElementById('custom-thought-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const input = document.getElementById('custom-thought-input');
+                    if (input.value.trim() !== '') {
+                        releaseThoughtAction();
+                        input.value = '';
+                    }
+                }
+            });
+
+            // Begin Sanctuary Journey Button
+            document.getElementById('btn-begin').addEventListener('click', () => {
+                const welcome = document.getElementById('welcome-overlay');
+                welcome.classList.add('opacity-0', 'pointer-events-none');
+
+                audioEngine.start();
+
+                setTimeout(() => {
+                    const hint = document.getElementById('hint-banner');
+                    if (hint) hint.classList.add('opacity-0');
+                }, 8000);
+            });
+
+            // Music / Sound Toggle Button
+            document.getElementById('btn-audio-toggle').addEventListener('click', () => {
+                const state = audioEngine.toggle();
+                const label = document.getElementById('audio-status-label');
+                const icon = document.getElementById('music-icon');
+
+                if (state) {
+                    label.innerText = 'No Surprises (Glockenspiel)';
+                    icon.classList.add('animate-pulse');
+                } else {
+                    label.innerText = 'Muted';
+                    icon.classList.remove('animate-pulse');
+                }
+            });
+
+            // Close Modals
+document.getElementById('close-orb-modal').addEventListener('click', () => {
+    const modal = document.getElementById('orb-modal');
+    modal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+    modal.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+    resetCameraFocus(); // <-- Added
+});
+
+document.getElementById('close-release-modal').addEventListener('click', () => {
+    const modal = document.getElementById('release-modal');
+    modal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+    modal.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+    resetCameraFocus(); // <-- Added
+});
+
+const closeLetter = () => {
+    const modal = document.getElementById('letter-modal');
+    modal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+    modal.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+    resetCameraFocus(); // <-- Added
+};
+document.getElementById('close-letter-modal').addEventListener('click', closeLetter);
+document.getElementById('close-letter-modal-x').addEventListener('click', closeLetter);
+
+document.getElementById('close-breathing').addEventListener('click', () => {
+    stopGuidedBreathing();
+    resetCameraFocus(); // <-- Added
+});
+
+            // Fullscreen Toggle
+            document.getElementById('btn-fullscreen').addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                } else {
+                    if (document.exitFullscreen) document.exitFullscreen();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
