@@ -422,9 +422,6 @@
     cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">🧹</text></svg>') 10 20, pointer !important;
   }
 
-  #doodle-canvas.cursor-stamp {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">✨</text></svg>') 10 10, crosshair !important;
-  }
 
   /* Mobile Landscape Height Tweaks */
   @media (max-height: 500px) and (orientation: landscape) {
@@ -1925,17 +1922,20 @@
     }
 
     function updateCanvasCursor() {
-      if (!canvasEl) return;
-      canvasEl.classList.remove('cursor-pen', 'cursor-eraser', 'cursor-stamp');
+  if (!canvasEl) return;
+  canvasEl.classList.remove('cursor-pen', 'cursor-eraser', 'cursor-stamp');
 
-      if (activeSticker) {
-        canvasEl.classList.add('cursor-stamp');
-      } else if (isEraserActive) {
-        canvasEl.classList.add('cursor-eraser');
-      } else {
-        canvasEl.classList.add('cursor-pen');
-      }
-    }
+  if (activeSticker) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">${activeSticker}</text></svg>`;
+    canvasEl.style.cursor = `url("data:image/svg+xml,${encodeURIComponent(svg)}") 10 10, crosshair`;
+  } else if (isEraserActive) {
+    canvasEl.style.cursor = '';
+    canvasEl.classList.add('cursor-eraser');
+  } else {
+    canvasEl.style.cursor = '';
+    canvasEl.classList.add('cursor-pen');
+  }
+}
 
     function updateBrushSizeFromSlider(val) {
       currentLineWidth = parseInt(val, 10);
