@@ -430,8 +430,17 @@
       }
     }
     /* High-Visibility Black Crosshair Cursor for Doodle Canvas */
-#doodle-canvas {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23000000" stroke="%23ffffff" stroke-width="0.5" d="M11 2h2v9h9v2h-9v9h-2v-9H2v-2h9V2z"/></svg>') 12 12, crosshair !important;
+/* Custom Canvas Cursors (Pen, Eraser & Stamp) */
+#doodle-canvas.cursor-pen {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">✏️</text></svg>') 0 20, pointer !important;
+}
+
+#doodle-canvas.cursor-eraser {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">🧹</text></svg>') 10 20, pointer !important;
+}
+
+#doodle-canvas.cursor-stamp {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">✨</text></svg>') 10 10, crosshair !important;
 }
   </style>
 </head>
@@ -1057,42 +1066,59 @@
   <div class="glass-card rounded-3xl p-4 sm:p-6 space-y-4 border-2 border-[#C87389]/40 shadow-md">
     
     <!-- Drawing Toolbar -->
-    <div class="flex flex-wrap items-center justify-between gap-3 bg-[#FFF5D7]/80 dark:bg-[#251F30]/80 p-3 rounded-2xl border border-[#C87389]/30">
-      
-      <!-- Color Palette -->
-      <div class="flex items-center space-x-2">
-        <span class="text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] font-fredoka hidden sm:inline">Color:</span>
-        <button type="button" onclick="setDoodleColor('#C87389', this)" class="color-btn w-7 h-7 rounded-full bg-[#C87389] border-2 border-white shadow-sm ring-2 ring-[#C87389] transition-transform active:scale-90" title="Strawberry Rose"></button>
-        <button type="button" onclick="setDoodleColor('#6E8B54', this)" class="color-btn w-7 h-7 rounded-full bg-[#6E8B54] border-2 border-white shadow-sm transition-transform active:scale-90" title="Matcha Green"></button>
-        <button type="button" onclick="setDoodleColor('#3D2F37', this)" class="color-btn w-7 h-7 rounded-full bg-[#3D2F37] border-2 border-white shadow-sm transition-transform active:scale-90" title="Cozy Charcoal"></button>
-        <button type="button" onclick="setDoodleColor('#7A92C2', this)" class="color-btn w-7 h-7 rounded-full bg-[#7A92C2] border-2 border-white shadow-sm transition-transform active:scale-90" title="Soft Blue"></button>
-        <button type="button" onclick="setDoodleColor('#E5B25D', this)" class="color-btn w-7 h-7 rounded-full bg-[#E5B25D] border-2 border-white shadow-sm transition-transform active:scale-90" title="Butter Yellow"></button>
-      </div>
+<div class="flex flex-wrap items-center justify-between gap-3 bg-[#FFF5D7]/80 dark:bg-[#251F30]/80 p-3 rounded-2xl border border-[#C87389]/30">
+  
+  <!-- Color Palette & Spectrum Picker -->
+  <div class="flex items-center space-x-2">
+    <span class="text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] font-fredoka hidden sm:inline">Color:</span>
+    <button type="button" onclick="setDoodleColor('#C87389', this)" class="color-btn w-7 h-7 rounded-full bg-[#C87389] border-2 border-white shadow-sm ring-2 ring-[#C87389] transition-transform active:scale-90" title="Strawberry Rose"></button>
+    <button type="button" onclick="setDoodleColor('#6E8B54', this)" class="color-btn w-7 h-7 rounded-full bg-[#6E8B54] border-2 border-white shadow-sm transition-transform active:scale-90" title="Matcha Green"></button>
+    <button type="button" onclick="setDoodleColor('#3D2F37', this)" class="color-btn w-7 h-7 rounded-full bg-[#3D2F37] border-2 border-white shadow-sm transition-transform active:scale-90" title="Cozy Charcoal"></button>
+    <button type="button" onclick="setDoodleColor('#7A92C2', this)" class="color-btn w-7 h-7 rounded-full bg-[#7A92C2] border-2 border-white shadow-sm transition-transform active:scale-90" title="Soft Blue"></button>
+    <button type="button" onclick="setDoodleColor('#E5B25D', this)" class="color-btn w-7 h-7 rounded-full bg-[#E5B25D] border-2 border-white shadow-sm transition-transform active:scale-90" title="Butter Yellow"></button>
+    
+    <!-- Spectrum Color Wheel Picker -->
+    <div class="relative w-7 h-7 rounded-full overflow-hidden border-2 border-white shadow-sm ring-1 ring-[#C87389]/40 flex items-center justify-center cursor-pointer" title="Custom Color Spectrum">
+      <input 
+        type="color" 
+        id="custom-color-picker" 
+        value="#C87389" 
+        oninput="setDoodleColor(this.value, this)" 
+        onchange="setDoodleColor(this.value, this)" 
+        class="absolute -inset-2 w-12 h-12 cursor-pointer p-0 border-0 bg-transparent">
+    </div>
+  </div>
 
-      <!-- Brush Size & Eraser Tools -->
-      <div class="flex items-center space-x-2">
-        <button type="button" onclick="setBrushSize(3, this)" class="size-btn px-2.5 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#3D2F37] dark:text-[#E6DFEC] border border-[#C87389]/30 hover:bg-[#FFCCE1]/50">Thin</button>
-        <button type="button" onclick="setBrushSize(7, this)" class="size-btn px-2.5 py-1 rounded-xl bg-[#C87389] font-fredoka text-xs font-bold text-white border border-[#C87389] shadow-sm">Cute</button>
-        <button type="button" onclick="setBrushSize(14, this)" class="size-btn px-2.5 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#3D2F37] dark:text-[#E6DFEC] border border-[#C87389]/30 hover:bg-[#FFCCE1]/50">Thick</button>
-        
-        <div class="h-5 w-px bg-[#C87389]/30 mx-1"></div>
+  <!-- Brush Size Slider & Eraser -->
+  <div class="flex items-center space-x-3">
+    <div class="flex items-center space-x-2 bg-white/70 dark:bg-[#34293D]/70 px-3 py-1 rounded-xl border border-[#C87389]/30">
+      <span class="text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] font-fredoka">Size:</span>
+      <input 
+        type="range" 
+        id="brush-size-slider" 
+        min="1" 
+        max="40" 
+        value="7" 
+        oninput="updateBrushSizeFromSlider(this.value)" 
+        class="w-20 sm:w-28 accent-[#C87389] cursor-pointer">
+      <span id="brush-size-label" class="text-xs font-bold font-fredoka text-[#C87389] dark:text-[#FFCCE1] w-7 text-right">7px</span>
+    </div>
 
-        <button type="button" id="eraser-btn" onclick="toggleEraser()" class="px-3 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] border border-[#C87389]/30 hover:bg-[#FFCCE1]/30 transition-all">
-          🧹 Eraser
-        </button>
-      </div>
+    <button type="button" id="eraser-btn" onclick="toggleEraser()" class="px-3 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] border border-[#C87389]/30 hover:bg-[#FFCCE1]/30 transition-all">
+      🧹 Eraser
+    </button>
+  </div>
 
-      <!-- Actions (Clear & Download) -->
-      <div class="flex items-center space-x-2 ml-auto">
-        <button type="button" onclick="clearDoodleCanvas()" class="px-3 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#C87389] hover:bg-red-50 dark:hover:bg-red-950/30 border border-red-200 transition-all">
-          Clear Canvas
-        </button>
-        <button type="button" onclick="downloadDoodle()" class="px-3.5 py-1 rounded-xl bg-[#6E8B54] hover:bg-[#556B42] font-fredoka text-xs font-bold text-white shadow-sm transition-all active:scale-95 flex items-center space-x-1">
-          <span>Save Doodle</span>
-          <span aria-hidden="true">💾</span>
-        </button>
-      </div>
-
+  <!-- Actions (Clear & Download) -->
+  <div class="flex items-center space-x-2 ml-auto">
+    <button type="button" onclick="clearDoodleCanvas()" class="px-3 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#C87389] hover:bg-red-50 dark:hover:bg-red-950/30 border border-red-200 transition-all">
+      Clear Canvas
+    </button>
+    <button type="button" onclick="downloadDoodle()" class="px-3.5 py-1 rounded-xl bg-[#6E8B54] hover:bg-[#556B42] font-fredoka text-xs font-bold text-white shadow-sm transition-all active:scale-95 flex items-center space-x-1">
+      <span>Save Doodle</span>
+      <span aria-hidden="true">💾</span>
+    </button>
+  </div>
     </div>
 <!-- Sticker Stamp Bar -->
 <div class="flex items-center space-x-2 overflow-x-auto py-1 px-2 bg-[#FFF5D7]/50 dark:bg-[#251F30]/50 rounded-2xl border border-[#C87389]/20 no-scrollbar">
@@ -1108,10 +1134,10 @@
 </div>
     <!-- Drawing Canvas Box -->
     <div class="relative w-full aspect-[4/3] sm:aspect-[16/9] bg-[#FFFDF9] dark:bg-[#1D1726] rounded-2xl overflow-hidden border-2 border-dashed border-[#C87389]/40 shadow-inner">
-      <canvas 
-        id="doodle-canvas" 
-        class="w-full h-full cursor-crosshair touch-none">
-      </canvas>
+     <canvas 
+  id="doodle-canvas" 
+  class="w-full h-full cursor-pen touch-none">
+</canvas>
       <div id="canvas-hint" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 transition-opacity">
         <p class="font-fredoka text-xs sm:text-sm text-[#C87389] dark:text-[#FFCCE1]">Doodle cute things here... 🍓✨</p>
       </div>
@@ -1914,6 +1940,28 @@ if (canvasEl) {
 }
 
 // Canvas Control Functions
+// Dynamic Cursor Switcher
+function updateCanvasCursor() {
+  if (!canvasEl) return;
+  canvasEl.classList.remove('cursor-pen', 'cursor-eraser', 'cursor-stamp');
+
+  if (activeSticker) {
+    canvasEl.classList.add('cursor-stamp');
+  } else if (isEraserActive) {
+    canvasEl.classList.add('cursor-eraser');
+  } else {
+    canvasEl.classList.add('cursor-pen');
+  }
+}
+
+// Brush Size Slider Handler
+function updateBrushSizeFromSlider(val) {
+  currentLineWidth = parseInt(val, 10);
+  const sizeLabel = document.getElementById('brush-size-label');
+  if (sizeLabel) sizeLabel.innerText = `${val}px`;
+}
+
+// Sticker Stamp Selection
 function setStickerStamp(emoji, btn) {
   activeSticker = emoji;
   isEraserActive = false;
@@ -1921,8 +1969,11 @@ function setStickerStamp(emoji, btn) {
   
   document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'scale-110'));
   if (btn) btn.classList.add('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'scale-110');
+  
+  updateCanvasCursor();
 }
 
+// Color Selection (Palette & Spectrum)
 function setDoodleColor(color, btn) {
   currentPenColor = color;
   isEraserActive = false;
@@ -1932,19 +1983,14 @@ function setDoodleColor(color, btn) {
   document.getElementById('eraser-btn').classList.remove('bg-[#C87389]', 'text-white');
   
   document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('ring-2', 'ring-[#C87389]'));
-  if (btn) btn.classList.add('ring-2', 'ring-[#C87389]');
-}
-
-function setBrushSize(size, btn) {
-  currentLineWidth = size;
-  document.querySelectorAll('.size-btn').forEach(b => {
-    b.className = "size-btn px-2.5 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#3D2F37] dark:text-[#E6DFEC] border border-[#C87389]/30 hover:bg-[#FFCCE1]/50";
-  });
-  if (btn) {
-    btn.className = "size-btn px-2.5 py-1 rounded-xl bg-[#C87389] font-fredoka text-xs font-bold text-white border border-[#C87389] shadow-sm";
+  if (btn && btn.classList.contains('color-btn')) {
+    btn.classList.add('ring-2', 'ring-[#C87389]');
   }
+  
+  updateCanvasCursor();
 }
 
+// Eraser Toggle
 function toggleEraser() {
   isEraserActive = !isEraserActive;
   activeSticker = null;
@@ -1957,6 +2003,8 @@ function toggleEraser() {
   } else {
     eraserBtn.classList.remove('bg-[#C87389]', 'text-white');
   }
+
+  updateCanvasCursor();
 }
 
 function clearDoodleCanvas() {
