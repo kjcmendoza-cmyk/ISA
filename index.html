@@ -481,13 +481,9 @@
     </div>
   </div>
 
-  <!-- Sticky Top Bar (Audio Synthesizer, Status Badge, Overwhelm & Night Toggles) -->
-   <!-- Hidden Background YouTube Audio Player -->
-<!-- ✅ PASTE THIS INSTEAD -->
-<!-- Visible Cozy Mini Player (Required by YouTube for Official Audio) -->
-<div class="fixed bottom-4 right-4 z-40 w-44 h-28 rounded-2xl overflow-hidden shadow-2xl border-2 border-[#C87389] bg-black pointer-events-auto">
-  <div id="yt-bg-player" class="w-full h-full"></div>
-</div>
+  <!-- ✅ PASTE THESE HTML5 AUDIO TAGS -->
+<audio id="audio-letter" src="landslide.mp3" preload="auto"></audio>
+<audio id="audio-relaxing" src="relaxing_1hr.mp3" loop preload="auto"></audio>
   <header class="sticky top-3 z-50 max-w-xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 mb-4">
     <div class="glass-card-strawberry rounded-2xl px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-lg border border-[#C87389]/40">
       
@@ -1307,113 +1303,100 @@
     }
     animateParticles();
 
-   // --- 6. Background YouTube Audio Engine ---
-let ytPlayer = null;
+   // --- 6. Native Audio Controller ---
+const audioLetter = document.getElementById('audio-letter');
+const audioRelaxing = document.getElementById('audio-relaxing');
+
+let currentAudio = audioRelaxing; // Default active track
 let isPlaying = false;
-let isYtReady = false;
-
-// Dynamically load YouTube IFrame API
-if (!window.YT) {
-  const tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  const firstScriptTag = document.getElementsByTagName('script')[0];
-  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-}
-
-function onYouTubeIframeAPIReady() {
-  ytPlayer = new YT.Player('yt-bg-player', {
-    height: '100%',
-    width: '100%',
-    videoId: 'XXK4unLVhE4',
-    playerVars: {
-      'autoplay': 0,
-      'controls': 1,
-      'loop': 1,
-      'playlist': 'XXK4unLVhE4',
-      'origin': window.location.origin
-    },
-    events: {
-      'onReady': () => { isYtReady = true; }
-    }
-  });
-}
 
 const audioToggleBtn = document.getElementById('audio-toggle');
 const audioIcon = document.getElementById('audio-icon');
 const audioLabel = document.getElementById('audio-label');
 const eqContainer = document.getElementById('eq-container');
 
-audioToggleBtn.addEventListener('click', () => {
-  if (!isPlaying) {
-    isPlaying = true;
+function updateAudioUI(playing) {
+  isPlaying = playing;
+  if (playing) {
     audioIcon.innerText = '⏸';
     audioLabel.innerText = 'Pause';
     eqContainer.classList.remove('paused');
-    
-    if (ytPlayer && isYtReady) {
-      ytPlayer.unMute();
-      ytPlayer.setVolume(100);
-      ytPlayer.playVideo();
-    }
   } else {
-    isPlaying = false;
     audioIcon.innerText = '▶';
     audioLabel.innerText = 'Sound';
     eqContainer.classList.add('paused');
-    
-    if (ytPlayer && isYtReady) {
-      ytPlayer.pauseVideo();
-    }
+  }
+}
+
+// Top Bar Play / Pause toggle button
+audioToggleBtn.addEventListener('click', () => {
+  if (!isPlaying) {
+    currentAudio.play().then(() => updateAudioUI(true)).catch(err => console.log(err));
+  } else {
+    currentAudio.pause();
+    updateAudioUI(false);
   }
 });
 
-    // --- 7. Interactive Envelope & Retract Logic ---
-    const envelope = document.getElementById('envelope');
-    const letterContainer = document.getElementById('letter-container');
-    const envelopeSubtext = document.getElementById('envelope-subtext');
-    const envelopeBadgeText = document.getElementById('envelope-badge-text');
+// --- 7. Interactive Envelope & Audio Switcher Logic ---
+const envelope = document.getElementById('envelope');
+const letterContainer = document.getElementById('letter-container');
+const envelopeSubtext = document.getElementById('envelope-subtext');
+const envelopeBadgeText = document.getElementById('envelope-badge-text');
 
-    function openEnvelope() {
-      envelope.classList.add('open');
-      envelopeSubtext.innerText = "Letter Unrolled • Tap envelope to fold back ✉️";
-      envelopeBadgeText.innerText = "Kuya's Letter Unfolded 🌸";
+function openEnvelope() {
+  envelope.classList.add('open');
+  envelopeSubtext.innerText = "Letter Unrolled • Tap envelope to fold back ✉️";
+  envelopeBadgeText.innerText = "Kuya's Letter Unfolded 🌸";
 
-      setTimeout(() => {
-        letterContainer.classList.add('show');
-        letterContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 300);
-    }
+  // Stop 1-hour ambient track & play Landslide from start
+  audioRelaxing.pause();
+  audioLetter.currentTime = 0;
+  audioLetter.play().then(() => {
+    currentAudio = audioLetter;
+    updateAudioUI(true);
+  }).catch(err => console.log("Audio play error:", err));
 
-    function closeEnvelope() {
-      letterContainer.classList.remove('show');
-      
-      // Smooth scroll back up to envelope before closing flap
-      envelope.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => {
+    letterContainer.classList.add('show');
+    letterContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 300);
+}
 
-      setTimeout(() => {
-        envelope.classList.remove('open');
-        envelopeSubtext.innerText = "Tap envelope or press Enter to unroll";
-        envelopeBadgeText.innerText = "Open when your mind feels heavy, Isa";
-        
-        showToast("Letter Retracted ✉️", "Envelope safely folded and stored back.");
-      }, 400);
-    }
+function closeEnvelope() {
+  letterContainer.classList.remove('show');
+  envelope.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    function toggleEnvelope() {
-      if (envelope.classList.contains('open')) {
-        closeEnvelope();
-      } else {
-        openEnvelope();
-      }
-    }
+  // Stop Landslide & seamlessly switch to 1-hour ambient stream
+  audioLetter.pause();
+  audioRelaxing.play().then(() => {
+    currentAudio = audioRelaxing;
+    updateAudioUI(true);
+  }).catch(err => console.log("Audio play error:", err));
 
-    envelope.addEventListener('click', toggleEnvelope);
-    envelope.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleEnvelope();
-      }
-    });
+  setTimeout(() => {
+    envelope.classList.remove('open');
+    envelopeSubtext.innerText = "Tap envelope or press Enter to unroll";
+    envelopeBadgeText.innerText = "Open when your mind feels heavy, Isa";
+    showToast("Letter Retracted ✉️", "Switched to 1-hour cozy relaxing stream 🍵");
+  }, 400);
+}
+
+function toggleEnvelope() {
+  if (envelope.classList.contains('open')) {
+    closeEnvelope();
+  } else {
+    openEnvelope();
+  }
+}
+
+envelope.addEventListener('click', toggleEnvelope);
+envelope.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    toggleEnvelope();
+  }
+});
 
     // --- 8. Targeted Emotion Validation Data & Switcher ---
     const emotionValidations = {
