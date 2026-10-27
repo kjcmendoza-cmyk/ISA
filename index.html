@@ -632,14 +632,14 @@
       </button>
 
       <button 
-        type="button"
-        onclick="switchTab('cinema')" 
-        id="tab-btn-cinema"
-        class="tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]">
-        <span aria-hidden="true">📺</span>
-        <span>Cozy Cinema</span>
-        <span class="hidden md:inline text-[10px] opacity-75 bg-black/10 px-1.5 py-0.5 rounded">5</span>
-      </button>
+  type="button"
+  onclick="switchTab('cinema')" 
+  id="tab-btn-cinema"
+  class="tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]">
+  <span aria-hidden="true">🎨</span>
+  <span>Isa's Doodle Nook</span>
+  <span class="hidden md:inline text-[10px] opacity-75 bg-black/10 px-1.5 py-0.5 rounded">5</span>
+</button>
     </nav>
 
     <!-- TAB 1: KUYA'S LETTER -->
@@ -1038,43 +1038,83 @@
       </div>
     </div>
 
-    <!-- TAB 5: COZY CINEMA -->
-    <div id="tab-panel-cinema" class="tab-panel tab-content-panel hidden space-y-5">
-      <div class="flex items-center space-x-2 px-1">
-        <span class="text-lg" aria-hidden="true">📺</span>
-        <h3 class="font-fredoka text-lg text-[#C87389] dark:text-[#FFCCE1] font-bold">Cozy Quiet Corner</h3>
+    <!-- TAB 5: ISA'S DOODLE & STICKER NOOK -->
+<div id="tab-panel-cinema" class="tab-panel tab-content-panel hidden space-y-5">
+  <div class="flex items-center justify-between px-1 flex-wrap gap-2">
+    <div class="flex items-center space-x-2">
+      <span class="text-xl" aria-hidden="true">🎨</span>
+      <h3 class="font-fredoka text-lg text-[#C87389] dark:text-[#FFCCE1] font-bold">Isa's Quiet Doodle Pad</h3>
+    </div>
+    <span class="text-xs font-fredoka text-[#556B42] dark:text-[#9CAF88] bg-[#FFF5D7] dark:bg-[#251F30] px-3 py-1 rounded-full border border-[#6E8B54]/30">
+      Draw anything cute • Zero pressure 🌸
+    </span>
+  </div>
+
+  <div class="glass-card rounded-3xl p-4 sm:p-6 space-y-4 border-2 border-[#C87389]/40 shadow-md">
+    
+    <!-- Drawing Toolbar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 bg-[#FFF5D7]/80 dark:bg-[#251F30]/80 p-3 rounded-2xl border border-[#C87389]/30">
+      
+      <!-- Color Palette -->
+      <div class="flex items-center space-x-2">
+        <span class="text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] font-fredoka hidden sm:inline">Color:</span>
+        <button type="button" onclick="setDoodleColor('#C87389', this)" class="color-btn w-7 h-7 rounded-full bg-[#C87389] border-2 border-white shadow-sm ring-2 ring-[#C87389] transition-transform active:scale-90" title="Strawberry Rose"></button>
+        <button type="button" onclick="setDoodleColor('#6E8B54', this)" class="color-btn w-7 h-7 rounded-full bg-[#6E8B54] border-2 border-white shadow-sm transition-transform active:scale-90" title="Matcha Green"></button>
+        <button type="button" onclick="setDoodleColor('#3D2F37', this)" class="color-btn w-7 h-7 rounded-full bg-[#3D2F37] border-2 border-white shadow-sm transition-transform active:scale-90" title="Cozy Charcoal"></button>
+        <button type="button" onclick="setDoodleColor('#7A92C2', this)" class="color-btn w-7 h-7 rounded-full bg-[#7A92C2] border-2 border-white shadow-sm transition-transform active:scale-90" title="Soft Blue"></button>
+        <button type="button" onclick="setDoodleColor('#E5B25D', this)" class="color-btn w-7 h-7 rounded-full bg-[#E5B25D] border-2 border-white shadow-sm transition-transform active:scale-90" title="Butter Yellow"></button>
       </div>
 
-      <div class="glass-card rounded-3xl p-4 sm:p-6 space-y-4 border-2 border-[#C87389]/40 shadow-md">
-        <!-- Responsive Video Container for PC & Mobile -->
-        <div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-inner border border-[#C87389]/30 bg-black/10">
-          <iframe 
-            class="absolute top-0 left-0 w-full h-full rounded-2xl"
-            src="https://www.youtube-nocookie.com/embed/5qap5aO4i9A?autoplay=0&rel=0&modestbranding=1" 
-            title="Cozy Relaxation Ambient Frame" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-          </iframe>
-        </div>
+      <!-- Brush Size & Eraser Tools -->
+      <div class="flex items-center space-x-2">
+        <button type="button" onclick="setBrushSize(3, this)" class="size-btn px-2.5 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#3D2F37] dark:text-[#E6DFEC] border border-[#C87389]/30 hover:bg-[#FFCCE1]/50">Thin</button>
+        <button type="button" onclick="setBrushSize(7, this)" class="size-btn px-2.5 py-1 rounded-xl bg-[#C87389] font-fredoka text-xs font-bold text-white border border-[#C87389] shadow-sm">Cute</button>
+        <button type="button" onclick="setBrushSize(14, this)" class="size-btn px-2.5 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#3D2F37] dark:text-[#E6DFEC] border border-[#C87389]/30 hover:bg-[#FFCCE1]/50">Thick</button>
+        
+        <div class="h-5 w-px bg-[#C87389]/30 mx-1"></div>
 
-        <div class="flex items-center justify-between px-1 flex-wrap gap-3">
-          <p class="text-xs sm:text-sm font-bold text-[#556B42] dark:text-[#9CAF88] flex items-center space-x-2">
-            <span aria-hidden="true">🍵</span>
-            <span>A soft visual grounding corner whenever you need a mental break.</span>
-          </p>
-          
-          <a 
-            href="https://www.youtube.com/watch?v=5qap5aO4i9A" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            class="inline-flex items-center space-x-1.5 text-xs sm:text-sm font-fredoka font-semibold text-[#C87389] dark:text-[#FFCCE1] hover:underline bg-[#FFF5D7] dark:bg-[#251F30] px-4 py-2 rounded-full border border-[#C87389]/40 active:scale-95 transition-transform min-h-[38px]">
-            <span>Watch on YouTube</span>
-            <span aria-hidden="true">↗</span>
-          </a>
-        </div>
+        <button type="button" id="eraser-btn" onclick="toggleEraser()" class="px-3 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] border border-[#C87389]/30 hover:bg-[#FFCCE1]/30 transition-all">
+          🧹 Eraser
+        </button>
+      </div>
+
+      <!-- Actions (Clear & Download) -->
+      <div class="flex items-center space-x-2 ml-auto">
+        <button type="button" onclick="clearDoodleCanvas()" class="px-3 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#C87389] hover:bg-red-50 dark:hover:bg-red-950/30 border border-red-200 transition-all">
+          Clear Canvas
+        </button>
+        <button type="button" onclick="downloadDoodle()" class="px-3.5 py-1 rounded-xl bg-[#6E8B54] hover:bg-[#556B42] font-fredoka text-xs font-bold text-white shadow-sm transition-all active:scale-95 flex items-center space-x-1">
+          <span>Save Doodle</span>
+          <span aria-hidden="true">💾</span>
+        </button>
+      </div>
+
+    </div>
+<!-- Sticker Stamp Bar -->
+<div class="flex items-center space-x-2 overflow-x-auto py-1 px-2 bg-[#FFF5D7]/50 dark:bg-[#251F30]/50 rounded-2xl border border-[#C87389]/20 no-scrollbar">
+  <span class="text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] font-fredoka shrink-0">Stamps:</span>
+  <button type="button" onclick="setStickerStamp('🍓', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Strawberry">🍓</button>
+  <button type="button" onclick="setStickerStamp('🍵', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Matcha">🍵</button>
+  <button type="button" onclick="setStickerStamp('🐾', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Paw Print">🐾</button>
+  <button type="button" onclick="setStickerStamp('🌸', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Blossom">🌸</button>
+  <button type="button" onclick="setStickerStamp('🧸', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Bear">🧸</button>
+  <button type="button" onclick="setStickerStamp('✨', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Sparkles">✨</button>
+  <button type="button" onclick="setStickerStamp('🎀', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Ribbon">🎀</button>
+  <button type="button" onclick="setStickerStamp('💖', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Heart">💖</button>
+</div>
+    <!-- Drawing Canvas Box -->
+    <div class="relative w-full aspect-[4/3] sm:aspect-[16/9] bg-[#FFFDF9] dark:bg-[#1D1726] rounded-2xl overflow-hidden border-2 border-dashed border-[#C87389]/40 shadow-inner">
+      <canvas 
+        id="doodle-canvas" 
+        class="w-full h-full cursor-crosshair touch-none">
+      </canvas>
+      <div id="canvas-hint" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 transition-opacity">
+        <p class="font-fredoka text-xs sm:text-sm text-[#C87389] dark:text-[#FFCCE1]">Doodle cute things here... 🍓✨</p>
       </div>
     </div>
+
+  </div>
+</div>
 
     <!-- Sanctuary Footer -->
     <footer class="pt-6 text-center space-y-3">
@@ -1745,6 +1785,205 @@ function escapeHtml(str) {
         toast.classList.add('hidden');
       }, 4500);
     }
+    // --- 14. Interactive Cute Doodle Canvas Logic ---
+const canvasEl = document.getElementById('doodle-canvas');
+const ctx2d = canvasEl ? canvasEl.getContext('2d') : null;
+const canvasHint = document.getElementById('canvas-hint');
+
+let isDrawing = false;
+let currentPenColor = '#C87389';
+let currentLineWidth = 7;
+let isEraserActive = false;
+let activeSticker = null;
+
+// --- Auto-Save Functions ---
+function saveDoodleToLocalStorage() {
+  if (!canvasEl) return;
+  try {
+    const dataUrl = canvasEl.toDataURL();
+    localStorage.setItem('isa_doodle_autosave', dataUrl);
+  } catch (e) {
+    console.log("Auto-save failed:", e);
+  }
+}
+
+function loadDoodleFromLocalStorage() {
+  if (!canvasEl || !ctx2d) return;
+  const savedData = localStorage.getItem('isa_doodle_autosave');
+  if (savedData) {
+    const img = new Image();
+    img.onload = function() {
+      ctx2d.clearRect(0, 0, canvasEl.width, canvasEl.height);
+      ctx2d.drawImage(img, 0, 0, canvasEl.width, canvasEl.height);
+      if (canvasHint) canvasHint.style.opacity = '0';
+    };
+    img.src = savedData;
+  }
+}
+
+function resizeDoodleCanvas() {
+  if (!canvasEl) return;
+  const rect = canvasEl.parentElement.getBoundingClientRect();
+  
+  // Guard: do not resize if canvas container is currently hidden
+  if (rect.width === 0 || rect.height === 0) return;
+
+  let tempImgData = null;
+  if (canvasEl.width > 0 && canvasEl.height > 0) {
+    tempImgData = ctx2d.getImageData(0, 0, canvasEl.width, canvasEl.height);
+  }
+
+  canvasEl.width = rect.width;
+  canvasEl.height = rect.height;
+
+  if (tempImgData) {
+    ctx2d.putImageData(tempImgData, 0, 0);
+  } else {
+    loadDoodleFromLocalStorage();
+  }
+}
+
+window.addEventListener('resize', resizeDoodleCanvas);
+
+function getCanvasCoords(e) {
+  const rect = canvasEl.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return {
+    x: clientX - rect.left,
+    y: clientY - rect.top
+  };
+}
+
+function startDrawing(e) {
+  if (e.target !== canvasEl) return;
+  if (canvasHint) canvasHint.style.opacity = '0';
+
+  const pos = getCanvasCoords(e);
+
+  // If a sticker stamp is selected, stamp it on tap and auto-save
+  if (activeSticker) {
+    ctx2d.font = '36px sans-serif';
+    ctx2d.textAlign = 'center';
+    ctx2d.textBaseline = 'middle';
+    ctx2d.fillText(activeSticker, pos.x, pos.y);
+    saveDoodleToLocalStorage();
+    return;
+  }
+
+  isDrawing = true;
+  ctx2d.beginPath();
+  ctx2d.moveTo(pos.x, pos.y);
+  
+  ctx2d.strokeStyle = isEraserActive ? (document.body.classList.contains('dim-mode') ? '#1D1726' : '#FFFDF9') : currentPenColor;
+  ctx2d.lineWidth = isEraserActive ? currentLineWidth * 2.5 : currentLineWidth;
+  ctx2d.lineCap = 'round';
+  ctx2d.lineJoin = 'round';
+}
+
+function drawMotion(e) {
+  if (!isDrawing) return;
+  e.preventDefault(); // Prevents touch scrolling while drawing
+  const pos = getCanvasCoords(e);
+  ctx2d.lineTo(pos.x, pos.y);
+  ctx2d.stroke();
+}
+
+function stopDrawing() {
+  if (isDrawing) {
+    ctx2d.closePath();
+    isDrawing = false;
+    saveDoodleToLocalStorage(); // Auto-save after completing stroke
+  }
+}
+
+if (canvasEl) {
+  // Mouse listeners
+  canvasEl.addEventListener('mousedown', startDrawing);
+  canvasEl.addEventListener('mousemove', drawMotion);
+  window.addEventListener('mouseup', stopDrawing);
+
+  // Mobile Touch listeners
+  canvasEl.addEventListener('touchstart', startDrawing, { passive: false });
+  canvasEl.addEventListener('touchmove', drawMotion, { passive: false });
+  window.addEventListener('touchend', stopDrawing);
+}
+
+// Canvas Control Functions
+function setStickerStamp(emoji, btn) {
+  activeSticker = emoji;
+  isEraserActive = false;
+  document.getElementById('eraser-btn').classList.remove('bg-[#C87389]', 'text-white');
+  
+  document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'scale-110'));
+  if (btn) btn.classList.add('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'scale-110');
+}
+
+function setDoodleColor(color, btn) {
+  currentPenColor = color;
+  isEraserActive = false;
+  activeSticker = null;
+  
+  document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'scale-110'));
+  document.getElementById('eraser-btn').classList.remove('bg-[#C87389]', 'text-white');
+  
+  document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('ring-2', 'ring-[#C87389]'));
+  if (btn) btn.classList.add('ring-2', 'ring-[#C87389]');
+}
+
+function setBrushSize(size, btn) {
+  currentLineWidth = size;
+  document.querySelectorAll('.size-btn').forEach(b => {
+    b.className = "size-btn px-2.5 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#3D2F37] dark:text-[#E6DFEC] border border-[#C87389]/30 hover:bg-[#FFCCE1]/50";
+  });
+  if (btn) {
+    btn.className = "size-btn px-2.5 py-1 rounded-xl bg-[#C87389] font-fredoka text-xs font-bold text-white border border-[#C87389] shadow-sm";
+  }
+}
+
+function toggleEraser() {
+  isEraserActive = !isEraserActive;
+  activeSticker = null;
+  
+  document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'scale-110'));
+  
+  const eraserBtn = document.getElementById('eraser-btn');
+  if (isEraserActive) {
+    eraserBtn.classList.add('bg-[#C87389]', 'text-white');
+  } else {
+    eraserBtn.classList.remove('bg-[#C87389]', 'text-white');
+  }
+}
+
+function clearDoodleCanvas() {
+  if (!ctx2d) return;
+  ctx2d.clearRect(0, 0, canvasEl.width, canvasEl.height);
+  localStorage.removeItem('isa_doodle_autosave'); // Remove saved doodle from storage
+  if (canvasHint) canvasHint.style.opacity = '0.4';
+  showToast("Canvas Cleared 🌸", "Your drawing board is fresh and ready!");
+}
+
+function downloadDoodle() {
+  if (!canvasEl) return;
+  const link = document.createElement('a');
+  link.download = `isa-sanctuary-doodle-${Date.now()}.png`;
+  link.href = canvasEl.toDataURL('image/png');
+  link.click();
+  showToast("Doodle Saved! 💾", "Downloaded to your device as a PNG image.");
+}
+
+// Ensure proper canvas sizing & load saved artwork when Tab 5 is opened
+const origSwitchTab = window.switchTab;
+window.switchTab = function(tabId) {
+  origSwitchTab(tabId);
+  if (tabId === 'cinema') {
+    setTimeout(() => {
+      resizeDoodleCanvas();
+      loadDoodleFromLocalStorage();
+    }, 50);
+  }
+};
+
   </script>
 </body>
 </html>
