@@ -396,7 +396,7 @@
     </div>
 
     <!-- Welcome / Entry Modal -->
-    <div id="welcome-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-[#020308]/95 backdrop-blur-xl transition-opacity duration-1000">
+    <div id="welcome-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-[#020308]/95 backdrop-blur-xl transition-opacity duration-1000">
         <div class="glass-panel w-full max-w-md rounded-3xl p-8 sm:p-10 text-center relative overflow-hidden border border-white/10 shadow-[0_0_90px_rgba(0,0,0,0.95)]">
             <div class="w-20 h-20 mx-auto rounded-full bg-indigo-950/80 border border-amber-300/30 flex items-center justify-center text-3xl mb-6 shadow-lg shadow-indigo-500/20 float-element">
                 🌙
@@ -428,223 +428,66 @@
     <script>
         // --- Web Audio API Synth Engine ---
         class SanctuaryAudioEngine {
-            constructor() {
-                this.ctx = null;
-                this.masterGain = null;
-                this.isPlaying = false;
-                this.volume = 0.5;
-                this.tempoBpm = 66;
-                this.stepIndex = 0;
-                this.timerId = null;
+    constructor() {
+        // Set this to your relative file path or raw GitHub URL
+        this.audioPath = 'no_surprises.mp3'; 
+        this.audio = new Audio(this.audioPath);
+        this.audio.loop = true;
+        this.isPlaying = false;
+        this.ctx = null;
+    }
 
-                this.notes = {
-                    'F5': 698.46,
-                    'A5': 880.00,
-                    'Bb5': 932.33,
-                    'C6': 1046.50,
-                    'Db6': 1108.73,
-                    'F6': 1396.91
-                };
+    initCtx() {
+        if (!this.ctx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
 
-                this.melodySequence = [
-                    'F5', 'A5', 'C6', 'F6', 'C6', 'A5', 'F5', 'C6',
-                    'F5', 'A5', 'C6', 'F6', 'C6', 'A5', 'F5', 'C6',
-                    'F5', 'Bb5', 'Db6', 'F6', 'Db6', 'Bb5', 'F5', 'Db6',
-                    'F5', 'A5', 'C6', 'F6', 'C6', 'A5', 'F5', 'C6'
-                ];
+    start() {
+        this.initCtx();
+        this.audio.play().then(() => {
+            this.isPlaying = true;
+        }).catch(err => {
+            console.warn("Autoplay blocked or audio load error:", err);
+        });
+    }
 
-                this.padOscs = [];
-                this.brownNoiseSource = null;
-this.brownNoiseGain = null;
-            }
+    stop() {
+        this.audio.pause();
+        this.isPlaying = false;
+    }
 
-            init() {
-                if (this.ctx) return;
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                this.ctx = new AudioContext();
-                this.masterGain = this.ctx.createGain();
-                this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
-                this.masterGain.connect(this.ctx.destination);
-            }
+    toggle() {
+        if (this.isPlaying) {
+            this.stop();
+            return false;
+        } else {
+            this.start();
+            return true;
+        }
+    }
 
-            playGlockenspielNote(freq) {
-                if (!this.ctx || !this.isPlaying) return;
-                const now = this.ctx.currentTime;
-
-                const osc1 = this.ctx.createOscillator();
-                const gain1 = this.ctx.createGain();
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(freq, now);
-
-                const osc2 = this.ctx.createOscillator();
-                const gain2 = this.ctx.createGain();
-                osc2.type = 'triangle';
-                osc2.frequency.setValueAtTime(freq * 2.003, now);
-
-                gain1.gain.setValueAtTime(0, now);
-                gain1.gain.linearRampToValueAtTime(0.28, now + 0.008);
-                gain1.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
-
-                gain2.gain.setValueAtTime(0, now);
-                gain2.gain.linearRampToValueAtTime(0.07, now + 0.005);
-                gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
-
-                osc1.connect(gain1);
-                osc2.connect(gain2);
-                gain1.connect(this.masterGain);
-                gain2.connect(this.masterGain);
-
-                osc1.start(now);
-                osc2.start(now);
-                osc1.stop(now + 1.9);
-                osc2.stop(now + 1.0);
-            }
-
-            startAmbientPad() {
-                if (!this.ctx) return;
-                this.stopAmbientPad();
-                const now = this.ctx.currentTime;
-
-                const padFreqs = [174.61, 261.63, 329.63];
-                padFreqs.forEach((freq, idx) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-                    const filter = this.ctx.createBiquadFilter();
-
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, now);
-                    osc.detune.setValueAtTime((idx - 1) * 5, now);
-
-                    filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(260, now);
-
-                    gain.gain.setValueAtTime(0, now);
-                    gain.gain.linearRampToValueAtTime(0.05, now + 3.0);
-
-                    osc.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(this.masterGain);
-
-                    osc.start(now);
-                    this.padOscs.push({ osc, gain });
-                });
-            }
-
-            stopAmbientPad() {
-                this.padOscs.forEach(item => {
-                    try {
-                        item.gain.gain.linearRampToValueAtTime(0.0001, this.ctx.currentTime + 1.0);
-                        setTimeout(() => item.osc.stop(), 1000);
-                    } catch(e){}
-                });
-                this.padOscs = [];
-            }
-startBrownNoise() {
+    playSoftChime() {
+        this.initCtx();
         if (!this.ctx) return;
-        this.stopBrownNoise();
-        
-
-        const bufferSize = this.ctx.sampleRate * 2;
-        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const output = buffer.getChannelData(0);
-        let lastOut = 0.0;
-
-        for (let i = 0; i < bufferSize; i++) {
-            const white = Math.random() * 2 - 1;
-            output[i] = (lastOut + (0.02 * white)) / 1.02;
-            lastOut = output[i];
-            output[i] *= 3.5;
-        }
-
-        this.brownNoiseSource = this.ctx.createBufferSource();
-        this.brownNoiseSource.buffer = buffer;
-        this.brownNoiseSource.loop = true;
-
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(320, this.ctx.currentTime);
-
-        this.brownNoiseGain = this.ctx.createGain();
-        this.brownNoiseGain.gain.setValueAtTime(0, this.ctx.currentTime);
-        this.brownNoiseGain.gain.linearRampToValueAtTime(0.045, this.ctx.currentTime + 3.0);
-
-        this.brownNoiseSource.connect(filter);
-        filter.connect(this.brownNoiseGain);
-        this.brownNoiseGain.connect(this.masterGain);
-
-        this.brownNoiseSource.start();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1046.50, now);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.18, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 2.5);
     }
-
-    stopBrownNoise() {
-        if (this.brownNoiseGain && this.ctx) {
-            try {
-                this.brownNoiseGain.gain.linearRampToValueAtTime(0.0001, this.ctx.currentTime + 1.0);
-                setTimeout(() => {
-                    if (this.brownNoiseSource) {
-                        this.brownNoiseSource.stop();
-                        this.brownNoiseSource.disconnect();
-                        this.brownNoiseSource = null;
-                    }
-                }, 1000);
-            } catch (e) {}
-        }
-    }
-            start() {
-                this.init();
-                if (this.ctx.state === 'suspended') this.ctx.resume();
-                this.isPlaying = true;
-                this.stepIndex = 0;
-                this.startAmbientPad();
-                this.startBrownNoise();
-
-                const stepDuration = (60 / this.tempoBpm) / 2 * 1000;
-                
-                const tick = () => {
-                    if (!this.isPlaying) return;
-                    const noteKey = this.melodySequence[this.stepIndex];
-                    if (noteKey && this.notes[noteKey]) {
-                        this.playGlockenspielNote(this.notes[noteKey]);
-                    }
-                    this.stepIndex = (this.stepIndex + 1) % this.melodySequence.length;
-                    this.timerId = setTimeout(tick, stepDuration);
-                };
-
-                tick();
-            }
-
-            stop() {
-                this.isPlaying = false;
-                if (this.timerId) clearTimeout(this.timerId);
-                this.stopAmbientPad();
-                this.stopBrownNoise();
-            }
-
-            toggle() {
-                if (this.isPlaying) {
-                    this.stop();
-                    return false;
-                } else {
-                    this.start();
-                    return true;
-                }
-            }
-
-            playSoftChime() {
-                if (!this.ctx) return;
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(1046.50, now);
-                gain.gain.setValueAtTime(0, now);
-                gain.gain.linearRampToValueAtTime(0.18, now + 0.01);
-                gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
-                osc.connect(gain);
-                gain.connect(this.masterGain);
-                osc.start(now);
-                osc.stop(now + 2.5);
-            }
-        }
+}
 
         const audioEngine = new SanctuaryAudioEngine();
 
@@ -653,7 +496,7 @@ startBrownNoise() {
             {
                 id: 'earth-pin',
                 name: 'The Earth Pin',
-                tag: 'Isa\'s Cozy Corner',
+                tag: "Isa's Cozy Corner",
                 icon: '📍',
                 color: '#38bdf8',
                 type: 'orb',
@@ -697,7 +540,7 @@ startBrownNoise() {
             {
                 id: 'shield-constellation',
                 name: 'Shield Constellation',
-                tag: 'Kuya\'s Support',
+                tag: "Kuya's Support",
                 icon: '✨',
                 color: '#c084fc',
                 type: 'orb',
@@ -908,54 +751,58 @@ function createAtmosphereMaterial(colorHex) {
     });
 }
         function initSanctuary3D() {
-            container = document.getElementById('canvas-container');
+    container = document.getElementById('canvas-container');
 
-            scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x020308, 0.0008);
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x020308, 0.0008);
 
-            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 2000);
-            camera.target = new THREE.Vector3(0, 0, 0);
-            camera.position.set(0, 0, 0.1);
+    camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 2000);
+    camera.target = new THREE.Vector3(0, 0, 0);
+    camera.position.set(0, 0, 0.1);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.3;
-           container.appendChild(renderer.domElement);
-            // --- ADD BLOOM POST-PROCESSING HERE ---
-const renderScene = new THREE.RenderPass(scene, camera);
-const bloomPass = new THREE.UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.8,  // bloom strength
-    0.4,  // bloom radius
-    0.85  // threshold
-);
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.3;
+    container.appendChild(renderer.domElement);
 
-composer = new THREE.EffectComposer(renderer);
-composer.addPass(renderScene);
-composer.addPass(bloomPass);
-// --------------------------------------
-
-// Lighting
-const ambientLight = new THREE.AmbientLight(0x2e3856, 1.2);
-            scene.add(ambientLight);
-
-            const sunPointLight = new THREE.PointLight(0xfef08a, 2.5, 800);
-            sunPointLight.position.set(230, 35, 90);
-            scene.add(sunPointLight);
-
-            createSkyDome();
-            createStarFields();
-            createNebulae();
-            createBioluminescentParticles();
-            create3DObjects();
-            createFloatingHTMLLabels();
-
-            setupInteractionEvents();
-            initRadarMapUI();
-            animate();
+    // --- SAFE POST-PROCESSING / BLOOM FALLBACK ---
+    try {
+        if (typeof THREE.EffectComposer !== 'undefined' && typeof THREE.RenderPass !== 'undefined' && typeof THREE.UnrealBloomPass !== 'undefined') {
+            const renderScene = new THREE.RenderPass(scene, camera);
+            const bloomPass = new THREE.UnrealBloomPass(
+                new THREE.Vector2(window.innerWidth, window.innerHeight),
+                0.8, 0.4, 0.85
+            );
+            composer = new THREE.EffectComposer(renderer);
+            composer.addPass(renderScene);
+            composer.addPass(bloomPass);
         }
+    } catch (e) {
+        console.warn("Post-processing fallback activated:", e);
+        composer = null;
+    }
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x2e3856, 1.2);
+    scene.add(ambientLight);
+
+    const sunPointLight = new THREE.PointLight(0xfef08a, 2.5, 800);
+    sunPointLight.position.set(230, 35, 90);
+    scene.add(sunPointLight);
+
+    createSkyDome();
+    createStarFields();
+    createNebulae();
+    createBioluminescentParticles();
+    create3DObjects();
+    createFloatingHTMLLabels();
+
+    setupInteractionEvents();
+    initRadarMapUI();
+    animate();
+}
 
         function createSkyDome() {
             const skyGeo = new THREE.SphereGeometry(900, 60, 40);
@@ -1367,8 +1214,10 @@ group.add(matchaAtmosphere);
 
                     labelEl.style.transform = `translate(-50%, -100%) translate3d(${x}px, ${y}px, 0px)`;
                     labelEl.style.opacity = '1';
+                    labelEl.style.pointerEvents = 'auto'; // Enable clicks when visible
                 } else {
                     labelEl.style.opacity = '0';
+                    labelEl.style.pointerEvents = 'none'; // Prevent hidden labels from blocking clicks
                 }
             });
         }
@@ -1507,7 +1356,8 @@ group.add(matchaAtmosphere);
         function onPointerUp(e) {
             isUserInteracting = false;
 
-            if (pointerDragDistance < 8) {
+            // Increased drag tolerance from 8px to 18px for responsive clicking/tapping
+            if (pointerDragDistance < 18) {
                 mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
@@ -1518,7 +1368,7 @@ group.add(matchaAtmosphere);
                     const hitObj = intersects[0].object;
                     const fId = hitObj.userData.featureId;
                     if (fId) {
-                        triggerFeatureById(fId, intersects[0].point);
+                        teleportToFeature(fId, true); // Smoothly fly to object & trigger action
                     }
                 }
             }
@@ -1674,28 +1524,32 @@ camera.lookAt(camera.target);
                 positions[3] = tailPos.x;
                 positions[4] = tailPos.y;
                 positions[5] = tailPos.z;
+ss.geometry.attributes.position.needsUpdate = true;
 
-                ss.geometry.attributes.position.needsUpdate = true;
+                    if (ss.userData.progress >= 1.2) {
+                        scene.remove(ss);
+                        ss.geometry.dispose();
+                        ss.material.dispose();
+                        shootingStars.splice(i, 1);
+                    }
+                }
 
-                if (ss.userData.progress >= 1.2) {
-                    scene.remove(ss);
-                    ss.geometry.dispose();
-                    ss.material.dispose();
-                    shootingStars.splice(i, 1);
+                if (Math.random() < 0.008) triggerShootingStar();
+
+                updateHTMLLabelsPosition();
+                drawRadarMap();
+
+                if (composer) {
+                    composer.render();
+                } else {
+                    renderer.render(scene, camera);
                 }
             }
 
-            if (Math.random() < 0.008) triggerShootingStar();
+            const clock = new THREE.Clock();
 
-            updateHTMLLabelsPosition();
-            drawRadarMap();
-            composer.render();
-        }
-
-        const clock = new THREE.Clock();
-
-        // --- Celestial 2D Radar Map ---
-        function initRadarMapUI() {
+            // --- Celestial 2D Radar Map ---
+            function initRadarMapUI() {
             const listContainer = document.getElementById('map-feature-list');
             listContainer.innerHTML = '';
 
@@ -1977,108 +1831,160 @@ function releaseThoughtAction(idx = null, targetElement = null) {
 
         // --- DOM Event Initialization ---
         window.addEventListener('DOMContentLoaded', () => {
-            initSanctuary3D();
-
-            // Toggle Celestial Radar Map Drawer
-            const mapDrawer = document.getElementById('map-drawer');
-            document.getElementById('btn-map-toggle').addEventListener('click', () => {
-                const isOpen = !mapDrawer.classList.contains('translate-x-[120%]');
-                if (isOpen) {
-                    mapDrawer.classList.add('translate-x-[120%]', 'opacity-0');
-                } else {
-                    mapDrawer.classList.remove('translate-x-[120%]', 'opacity-0');
-                }
-            });
-
-            document.getElementById('close-map-drawer').addEventListener('click', () => {
-                mapDrawer.classList.add('translate-x-[120%]', 'opacity-0');
-            });
-
-            // Custom Thought Release Handlers
-            document.getElementById('btn-release-custom').addEventListener('click', () => {
-                const input = document.getElementById('custom-thought-input');
-                if (input.value.trim() !== '') {
-                    releaseThoughtAction();
-                    input.value = '';
-                }
-            });
-
-            document.getElementById('custom-thought-input').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    const input = document.getElementById('custom-thought-input');
-                    if (input.value.trim() !== '') {
-                        releaseThoughtAction();
-                        input.value = '';
-                    }
-                }
-            });
-
-            // Begin Sanctuary Journey Button
-            document.getElementById('btn-begin').addEventListener('click', () => {
-                const welcome = document.getElementById('welcome-overlay');
+    // 1. Register the Enter button IMMEDIATELY so it always works
+    const btnBegin = document.getElementById('btn-begin');
+    if (btnBegin) {
+        btnBegin.addEventListener('click', () => {
+            const welcome = document.getElementById('welcome-overlay');
+            if (welcome) {
                 welcome.classList.add('opacity-0', 'pointer-events-none');
+            }
 
-                audioEngine.start();
+            // Safely start audio (prevents audio errors from breaking the UI)
+            try {
+                if (typeof audioEngine !== 'undefined' && audioEngine.start) {
+                    audioEngine.start();
+                }
+            } catch (err) {
+                console.warn("Audio failed to start:", err);
+            }
 
-                setTimeout(() => {
-                    const hint = document.getElementById('hint-banner');
-                    if (hint) hint.classList.add('opacity-0');
-                }, 8000);
-            });
+            setTimeout(() => {
+                const hint = document.getElementById('hint-banner');
+                if (hint) hint.classList.add('opacity-0');
+            }, 8000);
+        });
+    }
 
-            // Music / Sound Toggle Button
-            document.getElementById('btn-audio-toggle').addEventListener('click', () => {
+    // 2. Safely initialize 3D Sanctuary
+    try {
+        initSanctuary3D();
+    } catch (err) {
+        console.error("3D Sanctuary initialization failed:", err);
+    }
+
+    // Toggle Celestial Radar Map Drawer
+    const mapDrawer = document.getElementById('map-drawer');
+    const btnMapToggle = document.getElementById('btn-map-toggle');
+    if (btnMapToggle && mapDrawer) {
+        btnMapToggle.addEventListener('click', () => {
+            const isOpen = !mapDrawer.classList.contains('translate-x-[120%]');
+            if (isOpen) {
+                mapDrawer.classList.add('translate-x-[120%]', 'opacity-0');
+            } else {
+                mapDrawer.classList.remove('translate-x-[120%]', 'opacity-0');
+            }
+        });
+    }
+
+    const closeMapBtn = document.getElementById('close-map-drawer');
+    if (closeMapBtn && mapDrawer) {
+        closeMapBtn.addEventListener('click', () => {
+            mapDrawer.classList.add('translate-x-[120%]', 'opacity-0');
+        });
+    }
+
+    // Custom Thought Release Handlers
+    const btnRelease = document.getElementById('btn-release-custom');
+    if (btnRelease) {
+        btnRelease.addEventListener('click', () => {
+            const input = document.getElementById('custom-thought-input');
+            if (input && input.value.trim() !== '') {
+                releaseThoughtAction();
+                input.value = '';
+            }
+        });
+    }
+
+    const customInput = document.getElementById('custom-thought-input');
+    if (customInput) {
+        customInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && customInput.value.trim() !== '') {
+                releaseThoughtAction();
+                customInput.value = '';
+            }
+        });
+    }
+
+    // Music / Sound Toggle Button
+    const btnAudio = document.getElementById('btn-audio-toggle');
+    if (btnAudio) {
+        btnAudio.addEventListener('click', () => {
+            if (typeof audioEngine !== 'undefined') {
                 const state = audioEngine.toggle();
                 const label = document.getElementById('audio-status-label');
                 const icon = document.getElementById('music-icon');
 
                 if (state) {
-                    label.innerText = 'No Surprises (Glockenspiel)';
-                    icon.classList.add('animate-pulse');
+                    if (label) label.innerText = 'No Surprises (Glockenspiel)';
+                    if (icon) icon.classList.add('animate-pulse');
                 } else {
-                    label.innerText = 'Muted';
-                    icon.classList.remove('animate-pulse');
+                    if (label) label.innerText = 'Muted';
+                    if (icon) icon.classList.remove('animate-pulse');
                 }
-            });
-
-            // Close Modals
-document.getElementById('close-orb-modal').addEventListener('click', () => {
-    const modal = document.getElementById('orb-modal');
-    modal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
-    modal.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
-    resetCameraFocus(); // <-- Added
-});
-
-document.getElementById('close-release-modal').addEventListener('click', () => {
-    const modal = document.getElementById('release-modal');
-    modal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
-    modal.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
-    resetCameraFocus(); // <-- Added
-});
-
-const closeLetter = () => {
-    const modal = document.getElementById('letter-modal');
-    modal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
-    modal.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
-    resetCameraFocus(); // <-- Added
-};
-document.getElementById('close-letter-modal').addEventListener('click', closeLetter);
-document.getElementById('close-letter-modal-x').addEventListener('click', closeLetter);
-
-document.getElementById('close-breathing').addEventListener('click', () => {
-    stopGuidedBreathing();
-    resetCameraFocus(); // <-- Added
-});
-
-            // Fullscreen Toggle
-            document.getElementById('btn-fullscreen').addEventListener('click', () => {
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().catch(() => {});
-                } else {
-                    if (document.exitFullscreen) document.exitFullscreen();
-                }
-            });
+            }
         });
+    }
+
+    // Close Modals
+    const closeOrb = document.getElementById('close-orb-modal');
+    if (closeOrb) {
+        closeOrb.addEventListener('click', () => {
+            const modal = document.getElementById('orb-modal');
+            if (modal) {
+                modal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+                modal.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+            }
+            if (typeof resetCameraFocus === 'function') resetCameraFocus();
+        });
+    }
+
+    const closeRelease = document.getElementById('close-release-modal');
+    if (closeRelease) {
+        closeRelease.addEventListener('click', () => {
+            const modal = document.getElementById('release-modal');
+            if (modal) {
+                modal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+                modal.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+            }
+            if (typeof resetCameraFocus === 'function') resetCameraFocus();
+        });
+    }
+
+    const closeLetter = () => {
+        const modal = document.getElementById('letter-modal');
+        if (modal) {
+            modal.classList.remove('opacity-100', 'pointer-events-auto', 'scale-100');
+            modal.classList.add('opacity-0', 'pointer-events-none', 'scale-95');
+        }
+        if (typeof resetCameraFocus === 'function') resetCameraFocus();
+    };
+
+    const closeLetterBtn = document.getElementById('close-letter-modal');
+    if (closeLetterBtn) closeLetterBtn.addEventListener('click', closeLetter);
+    const closeLetterX = document.getElementById('close-letter-modal-x');
+    if (closeLetterX) closeLetterX.addEventListener('click', closeLetter);
+
+    const closeBreathing = document.getElementById('close-breathing');
+    if (closeBreathing) {
+        closeBreathing.addEventListener('click', () => {
+            if (typeof stopGuidedBreathing === 'function') stopGuidedBreathing();
+            if (typeof resetCameraFocus === 'function') resetCameraFocus();
+        });
+    }
+
+    // Fullscreen Toggle
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        });
+    }
+});
     </script>
 </body>
 </html>
