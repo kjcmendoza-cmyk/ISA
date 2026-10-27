@@ -810,11 +810,14 @@
 </div>
 
           <!-- Dynamic Targeted Validation Text Display -->
-          <div id="validation-display-box" class="bg-[#FFF5D7] dark:bg-[#251F30] border-2 border-[#6E8B54]/50 p-5 rounded-2xl min-h-[120px] flex items-center justify-center transition-all duration-300 shadow-inner my-2">
-            <p id="validation-text" class="text-xs sm:text-sm md:text-base font-bold text-[#475B37] dark:text-[#B2CEA4] leading-relaxed text-center">
-              "Select an option above or tap the matcha cup for a gentle reminder from Kuya. 🌿"
-            </p>
-          </div>
+<div id="validation-display-box" 
+     class="bg-[#FFF5D7] dark:bg-[#251F30] border-2 border-[#6E8B54]/50 p-5 rounded-2xl min-h-[120px] flex items-center justify-center transition-all duration-300 shadow-inner my-2" 
+     aria-live="polite" 
+     aria-atomic="true">
+  <p id="validation-text" class="text-xs sm:text-sm md:text-base font-bold text-[#475B37] dark:text-[#B2CEA4] leading-relaxed text-center">
+    "Select an option above or tap the matcha cup for a gentle reminder from Kuya. 🌿"
+  </p>
+</div>
         </div>
 
         <!-- MATCHA AFFIRMATION CUP DRAW (Takes 1 col on PC) -->
@@ -1842,9 +1845,12 @@ function loadDoodleFromLocalStorage() {
   const savedData = localStorage.getItem('isa_doodle_autosave');
   if (savedData) {
     const img = new Image();
+    const dpr = window.devicePixelRatio || 1;
     img.onload = function() {
-      ctx2d.clearRect(0, 0, canvasEl.width, canvasEl.height);
-      ctx2d.drawImage(img, 0, 0, canvasEl.width, canvasEl.height);
+      const w = canvasEl.width / dpr;
+      const h = canvasEl.height / dpr;
+      ctx2d.clearRect(0, 0, w, h);
+      ctx2d.drawImage(img, 0, 0, w, h);
       if (canvasHint) canvasHint.style.opacity = '0';
     };
     img.src = savedData;
@@ -1852,22 +1858,31 @@ function loadDoodleFromLocalStorage() {
 }
 
 function resizeDoodleCanvas() {
-  if (!canvasEl) return;
+  if (!canvasEl || !ctx2d) return;
   const rect = canvasEl.parentElement.getBoundingClientRect();
   
   // Guard: do not resize if canvas container is currently hidden
   if (rect.width === 0 || rect.height === 0) return;
 
-  let tempImgData = null;
-  if (canvasEl.width > 0 && canvasEl.height > 0) {
-    tempImgData = ctx2d.getImageData(0, 0, canvasEl.width, canvasEl.height);
-  }
+  const dpr = window.devicePixelRatio || 1;
 
-  canvasEl.width = rect.width;
-  canvasEl.height = rect.height;
+  // Preserve current canvas contents before resizing
+  const tempCanvasData = canvasEl.toDataURL();
 
-  if (tempImgData) {
-    ctx2d.putImageData(tempImgData, 0, 0);
+  // Scale physical pixel resolution to match display density
+  canvasEl.width = rect.width * dpr;
+  canvasEl.height = rect.height * dpr;
+
+  // Normalize drawing context scale to match CSS logical pixels
+  ctx2d.scale(dpr, dpr);
+
+  // Restore drawing onto scaled context
+  if (tempCanvasData && tempCanvasData !== 'data:,') {
+    const img = new Image();
+    img.onload = function() {
+      ctx2d.drawImage(img, 0, 0, rect.width, rect.height);
+    };
+    img.src = tempCanvasData;
   } else {
     loadDoodleFromLocalStorage();
   }
