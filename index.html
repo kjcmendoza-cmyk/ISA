@@ -1196,27 +1196,33 @@
     }
 
     // --- 4. Tab Navigation Logic & Keyboard Shortcuts (Keys 1-5 for PC) ---
-    const tabList = ['letter', 'reminders', 'shamebuster', 'sleep', 'cinema'];
+const tabList = ['letter', 'reminders', 'shamebuster', 'sleep', 'cinema'];
 
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-panel').forEach(panel => {
-        panel.classList.add('hidden');
-      });
+function switchTab(tabId) {
+  // Auto-fold envelope & switch audio back to ambient stream when leaving letter tab
+  const env = document.getElementById('envelope');
+  if (tabId !== 'letter' && env && env.classList.contains('open')) {
+    closeEnvelope(true); // Pass true to skip unnecessary scrolling when switching tabs
+  }
 
-      const targetPanel = document.getElementById(`tab-panel-${tabId}`);
-      if (targetPanel) {
-        targetPanel.classList.remove('hidden');
-      }
+  document.querySelectorAll('.tab-panel').forEach(panel => {
+    panel.classList.add('hidden');
+  });
 
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.className = "tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]";
-      });
+  const targetPanel = document.getElementById(`tab-panel-${tabId}`);
+  if (targetPanel) {
+    targetPanel.classList.remove('hidden');
+  }
 
-      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
-      if (activeBtn) {
-        activeBtn.className = "tab-btn active bg-[#C87389] text-white font-fredoka text-xs sm:text-sm font-bold px-4 py-2.5 rounded-2xl shadow-md transition-all border border-[#C87389]/50 flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]";
-      }
-    }
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.className = "tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]";
+  });
+
+  const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+  if (activeBtn) {
+    activeBtn.className = "tab-btn active bg-[#C87389] text-white font-fredoka text-xs sm:text-sm font-bold px-4 py-2.5 rounded-2xl shadow-md transition-all border border-[#C87389]/50 flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]";
+  }
+}
 
     // Global PC Keyboard Shortcut Switcher (Keys 1 - 5)
     document.addEventListener('keydown', (e) => {
@@ -1363,9 +1369,12 @@ function openEnvelope() {
   }, 300);
 }
 
-function closeEnvelope() {
+function closeEnvelope(skipScroll = false) {
   letterContainer.classList.remove('show');
-  envelope.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  
+  if (!skipScroll) {
+    envelope.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 
   // Stop Landslide & seamlessly switch to 1-hour ambient stream
   audioLetter.pause();
@@ -1378,7 +1387,10 @@ function closeEnvelope() {
     envelope.classList.remove('open');
     envelopeSubtext.innerText = "Tap envelope or press Enter to unroll";
     envelopeBadgeText.innerText = "Open when your mind feels heavy, Isa";
-    showToast("Letter Retracted ✉️", "Switched to 1-hour cozy relaxing stream 🍵");
+    
+    if (!skipScroll) {
+      showToast("Letter Retracted ✉️", "Switched to 1-hour cozy relaxing stream 🍵");
+    }
   }, 400);
 }
 
