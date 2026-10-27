@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
   <title>Isa's Safe Sanctuary 🍓🍵</title>
   
   <!-- Tailwind CSS CDN -->
@@ -43,52 +43,76 @@
   </script>
 
 <style>
-  /* Step 3: Tactile Cup Dip Animation */
-@keyframes teaDip {
-  0% { transform: scale(1) rotate(0deg); }
-  25% { transform: scale(1.18) rotate(-10deg) translateY(4px); }
-  50% { transform: scale(0.92) rotate(8deg) translateY(-2px); }
-  75% { transform: scale(1.06) rotate(-4deg); }
-  100% { transform: scale(1) rotate(0deg); }
-}
+  /* Base Safe Area & Touch Optimizations */
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+  }
 
-.tea-dip-anim {
-  animation: teaDip 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-  /* Step 2: Rising Steam Animation */
-@keyframes steamRise {
-  0% {
-    opacity: 0;
-    transform: translateY(0) scaleX(0.8);
+  body {
+    background-color: #F4F9F5;
+    color: #3D2F37;
+    font-family: 'Quicksand', sans-serif;
+    overflow-x: hidden;
+    transition: background-color 0.5s ease, color 0.5s ease;
+    padding-left: var(--sal);
+    padding-right: var(--sar);
+    padding-bottom: calc(5rem + var(--sab));
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  50% {
-    opacity: 0.6;
-    transform: translateY(-10px) scaleX(1.1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-22px) scaleX(1.3);
-  }
-}
 
-.steam-particle {
-  position: absolute;
-  font-size: 14px;
-  pointer-events: none;
-  animation: steamRise 2.2s infinite ease-out;
-  user-select: none;
-}
-.steam-1 { top: -12px; left: 30%; animation-delay: 0s; }
-.steam-2 { top: -14px; left: 48%; animation-delay: 0.7s; }
-.steam-3 { top: -12px; left: 66%; animation-delay: 1.4s; }
-  /* Add inside your <style> block */
-.emotion-chip.active-emotion {
-  background-color: #FFCCE1 !important;
-  color: #A04E64 !important;
-  border-color: #C87389 !important;
-  box-shadow: 0 4px 12px rgba(225, 149, 171, 0.4);
-  transform: translateY(-2px);
-}
+  /* Tactile Cup Dip Animation */
+  @keyframes teaDip {
+    0% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.18) rotate(-10deg) translateY(4px); }
+    50% { transform: scale(0.92) rotate(8deg) translateY(-2px); }
+    75% { transform: scale(1.06) rotate(-4deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  .tea-dip-anim {
+    animation: teaDip 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  /* Rising Steam Animation */
+  @keyframes steamRise {
+    0% {
+      opacity: 0;
+      transform: translateY(0) scaleX(0.8);
+    }
+    50% {
+      opacity: 0.6;
+      transform: translateY(-10px) scaleX(1.1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-22px) scaleX(1.3);
+    }
+  }
+
+  .steam-particle {
+    position: absolute;
+    font-size: 14px;
+    pointer-events: none;
+    animation: steamRise 2.2s infinite ease-out;
+    user-select: none;
+  }
+  .steam-1 { top: -12px; left: 30%; animation-delay: 0s; }
+  .steam-2 { top: -14px; left: 48%; animation-delay: 0.7s; }
+  .steam-3 { top: -12px; left: 66%; animation-delay: 1.4s; }
+
+  /* Emotion & Somatic Active States */
+  .emotion-chip.active-emotion {
+    background-color: #FFCCE1 !important;
+    color: #A04E64 !important;
+    border-color: #C87389 !important;
+    box-shadow: 0 4px 12px rgba(225, 149, 171, 0.4);
+    transform: translateY(-2px);
+  }
+
   /* Enhanced Particle & Text Dissolve Animation */
   .dissolving-text {
     transition: opacity 0.8s ease, filter 0.8s ease, transform 0.8s ease !important;
@@ -120,359 +144,349 @@
     }
   }
 
-  /* Somatic Chip Active Toggled State & Tactile Spring */
   .somatic-chip {
-      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-    .somatic-chip.active-chip {
-      background-color: #6E8B54 !important;
-      color: #ffffff !important;
-      border-color: #475B37 !important;
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 4px 14px rgba(110, 139, 84, 0.4);
-    }
+  .somatic-chip.active-chip {
+    background-color: #6E8B54 !important;
+    color: #ffffff !important;
+    border-color: #475B37 !important;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 14px rgba(110, 139, 84, 0.4);
+  }
 
-    /* Custom Aesthetics & Micro-interactions */
-    body {
-      background-color: #F4F9F5;
-      color: #3D2F37;
-      font-family: 'Quicksand', sans-serif;
-      overflow-x: hidden;
-      transition: background-color 0.5s ease, color 0.5s ease;
-    }
+  body.dim-mode {
+    background-color: #15111D;
+    color: #E6DFEC;
+  }
 
-    body.dim-mode {
-      background-color: #15111D;
-      color: #E6DFEC;
-    }
+  /* Accessibility Focus Rings */
+  *:focus-visible {
+    outline: 3px solid #C87389;
+    outline-offset: 3px;
+  }
 
-    /* Accessibility Focus Rings for Mouse & Keyboard Users */
-    *:focus-visible {
-      outline: 3px solid #C87389;
-      outline-offset: 3px;
-    }
+  .dim-mode *:focus-visible {
+    outline-color: #FFCCE1;
+  }
 
-    .dim-mode *:focus-visible {
-      outline-color: #FFCCE1;
-    }
+  /* Custom Scrollbar for Smooth Touch Momentum */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(244, 249, 245, 0.5);
+  }
+  .dim-mode ::-webkit-scrollbar-track {
+    background: rgba(21, 17, 29, 0.5);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #C87389;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #A04E64;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
 
-    /* Custom Scrollbar for PC / Desktop */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(244, 249, 245, 0.5);
-    }
-    .dim-mode ::-webkit-scrollbar-track {
-      background: rgba(21, 17, 29, 0.5);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #C87389;
-      border-radius: 999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #A04E64;
-    }
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+  /* Glassmorphic Cards */
+  .glass-card {
+    background: rgba(255, 245, 215, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 2px solid rgba(225, 149, 171, 0.4);
+    box-shadow: 0 12px 32px -8px rgba(200, 115, 137, 0.18);
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, transform 0.2s ease;
+  }
 
-    /* Glassmorphic Cards */
-    .glass-card {
-      background: rgba(255, 245, 215, 0.92);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 2px solid rgba(225, 149, 171, 0.4);
-      box-shadow: 0 12px 32px -8px rgba(200, 115, 137, 0.18);
-      transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, transform 0.2s ease;
-    }
+  .dim-mode .glass-card {
+    background: rgba(37, 31, 48, 0.92);
+    border-color: rgba(225, 149, 171, 0.3);
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5);
+  }
 
-    .dim-mode .glass-card {
-      background: rgba(37, 31, 48, 0.92);
-      border-color: rgba(225, 149, 171, 0.3);
-      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5);
-    }
+  .glass-card-strawberry {
+    background: rgba(255, 204, 225, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 2px solid rgba(200, 115, 137, 0.45);
+    box-shadow: 0 12px 32px -8px rgba(225, 149, 171, 0.25);
+    transition: all 0.4s ease;
+  }
 
-    .glass-card-strawberry {
-      background: rgba(255, 204, 225, 0.88);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 2px solid rgba(200, 115, 137, 0.45);
-      box-shadow: 0 12px 32px -8px rgba(225, 149, 171, 0.25);
-      transition: all 0.4s ease;
-    }
+  .dim-mode .glass-card-strawberry {
+    background: rgba(52, 35, 48, 0.92);
+    border-color: rgba(225, 149, 171, 0.35);
+    box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5);
+  }
 
-    .dim-mode .glass-card-strawberry {
-      background: rgba(52, 35, 48, 0.92);
-      border-color: rgba(225, 149, 171, 0.35);
-      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.5);
-    }
+  .glass-card-matcha {
+    background: rgba(156, 175, 136, 0.35);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 2px solid rgba(110, 139, 84, 0.45);
+    box-shadow: 0 10px 28px -6px rgba(110, 139, 84, 0.2);
+    transition: all 0.4s ease;
+  }
 
-    .glass-card-matcha {
-      background: rgba(156, 175, 136, 0.35);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 2px solid rgba(110, 139, 84, 0.45);
-      box-shadow: 0 10px 28px -6px rgba(110, 139, 84, 0.2);
-      transition: all 0.4s ease;
-    }
+  .dim-mode .glass-card-matcha {
+    background: rgba(30, 42, 28, 0.88);
+    border-color: rgba(156, 175, 136, 0.35);
+    box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.5);
+  }
 
-    .dim-mode .glass-card-matcha {
-      background: rgba(30, 42, 28, 0.88);
-      border-color: rgba(156, 175, 136, 0.35);
-      box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.5);
-    }
+  /* Envelope Responsive Styling */
+  .envelope-wrapper {
+    perspective: 1200px;
+    width: 100%;
+  }
 
-    /* Envelope Styling & Dynamic Unfolding */
-    .envelope-wrapper {
-      perspective: 1200px;
-    }
+  .envelope {
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+    min-height: 220px;
+    background: #FFCCE1;
+    border: 3px solid #C87389;
+    border-radius: 24px;
+    box-shadow: 0 16px 36px rgba(200, 115, 137, 0.25);
+    cursor: pointer;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, background 0.5s ease;
+    transform-style: preserve-3d;
+  }
 
-    .envelope {
-      position: relative;
-      width: 100%;
-      max-width: 540px;
-      height: 240px;
-      background: #FFCCE1;
-      border: 3px solid #C87389;
-      border-radius: 24px;
-      box-shadow: 0 16px 36px rgba(200, 115, 137, 0.25);
-      cursor: pointer;
-      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, background 0.5s ease;
-      transform-style: preserve-3d;
-    }
+  .dim-mode .envelope {
+    background: #402939;
+    border-color: #E195AB;
+  }
 
-    .dim-mode .envelope {
-      background: #402939;
-      border-color: #E195AB;
-    }
+  .envelope:hover, .envelope:focus-visible {
+    transform: translateY(-4px) scale(1.015);
+    box-shadow: 0 22px 44px rgba(200, 115, 137, 0.35);
+  }
 
-    .envelope:hover, .envelope:focus-visible {
-      transform: translateY(-4px) scale(1.015);
-      box-shadow: 0 22px 44px rgba(200, 115, 137, 0.35);
-    }
+  .envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 110px;
+    background: #F7B3CE;
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    transform-origin: top center;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.6s;
+    border-bottom: 2px solid #C87389;
+    z-index: 10;
+    backface-visibility: hidden;
+  }
 
-    .envelope-flap {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 120px;
-      background: #F7B3CE;
-      clip-path: polygon(0 0, 50% 100%, 100% 0);
-      transform-origin: top center;
-      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.6s;
-      border-bottom: 2px solid #C87389;
-      z-index: 10;
-      backface-visibility: hidden;
-    }
+  .dim-mode .envelope-flap {
+    background: #52344A;
+    border-bottom-color: #E195AB;
+  }
 
-    .dim-mode .envelope-flap {
-      background: #52344A;
-      border-bottom-color: #E195AB;
-    }
+  .envelope.open .envelope-flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+  }
 
-    .envelope.open .envelope-flap {
-      transform: rotateX(180deg);
-      z-index: 1;
-    }
+  /* Smooth Letter Paper Unfold */
+  .letter-paper {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform-origin: top center;
+    transform: translateY(-24px) scale(0.94) rotateX(-10deg);
+    transition: max-height 0.75s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+                transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: max-height, opacity, transform;
+  }
 
-    /* Smooth Tactile Unfold & Retract Animations for Letter Paper */
-    .letter-paper {
-      max-height: 0;
-      opacity: 0;
-      overflow: hidden;
-      transform-origin: top center;
-      transform: translateY(-24px) scale(0.94) rotateX(-10deg);
-      transition: max-height 0.75s cubic-bezier(0.16, 1, 0.3, 1), 
-                  opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
-                  transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-      will-change: max-height, opacity, transform;
-    }
+  .letter-paper.show {
+    max-height: 2500px;
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+  }
 
-    .letter-paper.show {
-      max-height: 2000px;
-      opacity: 1;
-      transform: translateY(0) scale(1) rotateX(0deg);
-    }
+  /* Breathing Circle Dynamics & Mobile Scaling */
+  .breathing-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,204,225,0.95) 0%, rgba(156,175,136,0.65) 100%);
+    box-shadow: 0 0 35px rgba(200, 115, 137, 0.4);
+    transition: transform 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-    /* Floating Canvas Animation */
-    @keyframes floatSlow {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-8px) rotate(1.5deg); }
-    }
-
-    .animate-float {
-      animation: floatSlow 4s ease-in-out infinite;
-    }
-
-    /* Breathing Circle Dynamics */
+  @media (min-width: 640px) {
     .breathing-circle {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,204,225,0.95) 0%, rgba(156,175,136,0.65) 100%);
-      box-shadow: 0 0 35px rgba(200, 115, 137, 0.4);
-      transition: transform 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 170px;
+      height: 170px;
     }
+  }
 
-    @media (min-width: 640px) {
-      .breathing-circle {
-        width: 180px;
-        height: 180px;
-      }
+  .breathing-circle.expand {
+    transform: scale(1.4);
+    box-shadow: 0 0 55px rgba(110, 139, 84, 0.7);
+  }
+
+  .breathing-circle.topup {
+    transform: scale(1.55);
+    box-shadow: 0 0 65px rgba(255, 204, 225, 0.9);
+  }
+
+  .breathing-circle.hold {
+    transform: scale(1.4);
+  }
+
+  .breathing-circle.contract {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(200, 115, 137, 0.3);
+  }
+
+  /* Equalizer Sound Bars */
+  .eq-bar {
+    width: 3.5px;
+    background-color: #C87389;
+    animation: eq 0.8s infinite alternate ease-in-out;
+  }
+  .dim-mode .eq-bar {
+    background-color: #FFCCE1;
+  }
+  .eq-bar:nth-child(1) { animation-delay: 0.1s; height: 12px; }
+  .eq-bar:nth-child(2) { animation-delay: 0.3s; height: 18px; }
+  .eq-bar:nth-child(3) { animation-delay: 0.2s; height: 10px; }
+  
+  @keyframes eq {
+    0% { height: 4px; }
+    100% { height: 18px; }
+  }
+
+  .paused .eq-bar {
+    animation-play-state: paused;
+    height: 4px !important;
+  }
+
+  .tab-content-panel {
+    animation: tabFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes tabFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.995);
     }
-
-    .breathing-circle.expand {
-      transform: scale(1.55);
-      box-shadow: 0 0 55px rgba(110, 139, 84, 0.7);
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
+  }
 
+  /* Toast Notification */
+  @keyframes toastSlide {
+    0% { transform: translate(-50%, 100%) scale(0.9); opacity: 0; }
+    100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+  }
+  .toast-anim {
+    animation: toastSlide 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+
+  @keyframes gentleGlow {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.25); opacity: 0.95; }
+  }
+  .animate-glow {
+    animation: gentleGlow 6s ease-in-out infinite;
+  }
+
+  /* Canvas Cursors */
+  #doodle-canvas.cursor-pen {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">✏️</text></svg>') 0 20, pointer !important;
+  }
+
+  #doodle-canvas.cursor-eraser {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">🧹</text></svg>') 10 20, pointer !important;
+  }
+
+  #doodle-canvas.cursor-stamp {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">✨</text></svg>') 10 10, crosshair !important;
+  }
+
+  /* Mobile Landscape Height Tweaks */
+  @media (max-height: 500px) and (orientation: landscape) {
+    header {
+      top: 0.25rem !important;
+      margin-bottom: 0.5rem !important;
+    }
+    .breathing-circle {
+      width: 110px !important;
+      height: 110px !important;
+    }
+    .breathing-circle.expand, .breathing-circle.hold {
+      transform: scale(1.25) !important;
+    }
     .breathing-circle.topup {
-      transform: scale(1.72);
-      box-shadow: 0 0 65px rgba(255, 204, 225, 0.9);
+      transform: scale(1.35) !important;
     }
+  }
 
-    .breathing-circle.hold {
-      transform: scale(1.55);
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
-
-    .breathing-circle.contract {
-      transform: scale(1);
-      box-shadow: 0 0 20px rgba(200, 115, 137, 0.3);
+    .breathing-circle, .eq-bar, .toast-anim, .tab-content-panel, .animate-glow {
+      animation: none !important;
     }
-
-    /* Equalizer Sound Bars */
-    .eq-bar {
-      width: 3.5px;
-      background-color: #C87389;
-      animation: eq 0.8s infinite alternate ease-in-out;
-    }
-    .dim-mode .eq-bar {
-      background-color: #FFCCE1;
-    }
-    .eq-bar:nth-child(1) { animation-delay: 0.1s; height: 12px; }
-    .eq-bar:nth-child(2) { animation-delay: 0.3s; height: 18px; }
-    .eq-bar:nth-child(3) { animation-delay: 0.2s; height: 10px; }
-    
-    @keyframes eq {
-      0% { height: 4px; }
-      100% { height: 18px; }
-    }
-
-    .paused .eq-bar {
-      animation-play-state: paused;
-      height: 4px !important;
-    }
-
-    /* Tab Transition Fade/Slide */
-    .tab-content-panel {
-      animation: tabFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes tabFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px) scale(0.995);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    /* Thought Dissolver Animation */
-    .dissolving {
-      transition: opacity 1s ease, transform 1s ease, filter 1s ease !important;
-      opacity: 0 !important;
-      transform: scale(0.95) translateY(-10px) !important;
-      filter: blur(8px) !important;
-    }
-
-    /* Toast Notification Animation */
-    @keyframes toastSlide {
-      0% { transform: translate(-50%, 100%) scale(0.9); opacity: 0; }
-      100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
-    }
-    .toast-anim {
-      animation: toastSlide 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-
-    /* Glowing Pulsing Effect for Overwhelm Mode */
-    @keyframes gentleGlow {
-      0%, 100% { transform: scale(1); opacity: 0.7; }
-      50% { transform: scale(1.25); opacity: 0.95; }
-    }
-    .animate-glow {
-      animation: gentleGlow 6s ease-in-out infinite;
-    }
-
-    /* Reduced Motion Preference Accessibility */
-    @media (prefers-reduced-motion: reduce) {
-      *, ::before, ::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
-      .animate-float, .breathing-circle, .eq-bar, .toast-anim, .tab-content-panel, .animate-glow {
-        animation: none !important;
-      }
-    }
-    /* High-Visibility Black Crosshair Cursor for Doodle Canvas */
-/* Custom Canvas Cursors (Pen, Eraser & Stamp) */
-#doodle-canvas.cursor-pen {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">✏️</text></svg>') 0 20, pointer !important;
-}
-
-#doodle-canvas.cursor-eraser {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">🧹</text></svg>') 10 20, pointer !important;
-}
-
-#doodle-canvas.cursor-stamp {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><text y="20" font-size="20">✨</text></svg>') 10 10, crosshair !important;
-}
-  </style>
+  }
+</style>
 </head>
-<body class="min-h-screen text-[#3D2F37] dark:text-[#E6DFEC] relative selection:bg-[#FFCCE1] selection:text-[#C87389] pb-20">
+<body class="min-h-screen text-[#3D2F37] dark:text-[#E6DFEC] relative selection:bg-[#FFCCE1] selection:text-[#C87389]">
 
-  <!-- Floating Canvas Background (Petals, Matcha Leaves, Strawberries, Sparkles) -->
+  <!-- Floating Canvas Background -->
   <canvas id="bg-canvas" class="fixed inset-0 pointer-events-none z-0" aria-hidden="true"></canvas>
 
-  <!-- OVERWHELM MODE FULL SCREEN OVERLAY (Zero-Brainpower Mode for Mobile & PC) -->
-  <div id="overwhelm-overlay" class="fixed inset-0 bg-[#15111D]/95 backdrop-blur-xl z-[100] hidden flex flex-col items-center justify-between p-6 text-center transition-all duration-500 overflow-y-auto">
-    <div class="pt-6 space-y-2">
+  <!-- OVERWHELM MODE FULL SCREEN OVERLAY -->
+  <div id="overwhelm-overlay" class="fixed inset-0 bg-[#15111D]/95 backdrop-blur-xl z-[100] hidden flex flex-col items-center justify-between p-4 sm:p-6 text-center transition-all duration-500 overflow-y-auto">
+    <div class="pt-4 sm:pt-6 space-y-2">
       <div class="inline-flex items-center space-x-2 bg-[#251F30] border border-[#6E8B54]/50 px-4 py-1.5 rounded-full text-xs font-fredoka text-[#9CAF88]">
-        <span>🍵 Isa's Peacful Sanctuary</span>
+        <span>🍵 Isa's Peaceful Sanctuary</span>
         <span class="hidden md:inline text-[10px] text-gray-400 opacity-75">(Press Esc to exit)</span>
       </div>
     </div>
 
     <!-- Glowing Breathing Centerpiece -->
-    <div class="my-auto space-y-8 max-w-lg px-4 py-6">
+    <div class="my-auto space-y-6 max-w-lg px-4 py-4">
       <div class="relative flex justify-center items-center">
-        <div class="w-48 h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-tr from-[#FFCCE1]/30 to-[#9CAF88]/30 blur-2xl animate-glow absolute"></div>
-        <div class="w-36 h-36 md:w-48 md:h-48 rounded-full border-2 border-[#FFCCE1]/40 flex items-center justify-center text-4xl md:text-6xl shadow-2xl relative bg-[#251F30]/80">
+        <div class="w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-tr from-[#FFCCE1]/30 to-[#9CAF88]/30 blur-2xl animate-glow absolute"></div>
+        <div class="w-32 h-32 sm:w-36 sm:h-36 md:w-48 md:h-48 rounded-full border-2 border-[#FFCCE1]/40 flex items-center justify-center text-4xl sm:text-5xl md:text-6xl shadow-2xl relative bg-[#251F30]/80">
           🌸
         </div>
       </div>
 
-      <div class="space-y-3">
-        <h2 class="font-fredoka text-2xl sm:text-3xl md:text-4xl text-[#FFCCE1] font-bold">
+      <div class="space-y-2 sm:space-y-3">
+        <h2 class="font-fredoka text-xl sm:text-2xl md:text-4xl text-[#FFCCE1] font-bold">
           Nothing to read. Nothing to fix.
         </h2>
-        <p class="text-sm sm:text-base md:text-lg text-[#9CAF88] font-medium leading-relaxed max-w-md mx-auto">
-          One Step at a Time. You don't have to accomplish anything right now. Relax yourslef and sink into your bed.
+        <p class="text-xs sm:text-base md:text-lg text-[#9CAF88] font-medium leading-relaxed max-w-md mx-auto">
+          One Step at a Time. You don't have to accomplish anything right now. Relax yourself and sink into your bed.
         </p>
       </div>
 
@@ -484,7 +498,7 @@
       </div>
     </div>
 
-    <div class="pb-6">
+    <div class="pb-4 sm:pb-6">
       <button 
         type="button" 
         onclick="toggleOverwhelmMode(false)"
@@ -494,32 +508,34 @@
     </div>
   </div>
 
-  <!-- ✅ PASTE THESE HTML5 AUDIO TAGS -->
-<audio id="audio-letter" src="landslide.mp3" preload="auto"></audio>
-<audio id="audio-relaxing" src="relaxing_1hr.mp3" loop preload="auto"></audio>
-  <header class="sticky top-3 z-50 max-w-xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 mb-4">
-    <div class="glass-card-strawberry rounded-2xl px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-lg border border-[#C87389]/40">
+  <!-- HTML5 Audio Tags -->
+  <audio id="audio-letter" src="landslide.mp3" preload="auto"></audio>
+  <audio id="audio-relaxing" src="relaxing_1hr.mp3" loop preload="auto"></audio>
+
+  <!-- Navigation Header -->
+  <header class="sticky top-2 sm:top-3 z-50 max-w-xl md:max-w-4xl lg:max-w-6xl mx-auto px-3 sm:px-4 mb-3 sm:mb-4 pt-[var(--sat)]">
+    <div class="glass-card-strawberry rounded-2xl px-3 sm:px-5 py-2 sm:py-2.5 flex flex-wrap items-center justify-between gap-2 sm:gap-3 shadow-lg border border-[#C87389]/40">
       
-      <!-- Audio & Anchor Status -->
-      <div class="flex items-center space-x-3">
+      <!-- Audio Status -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
         <div id="eq-container" class="flex items-end space-x-1 h-5 paused" title="Audio Visualizer" aria-hidden="true">
           <div class="eq-bar rounded-full"></div>
           <div class="eq-bar rounded-full"></div>
           <div class="eq-bar rounded-full"></div>
         </div>
-        <div class="bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs font-semibold px-3 py-1.5 rounded-xl border border-[#C87389]/40 flex items-center space-x-1.5 shadow-sm">
-  <span>🍵 Cozy Sanctuary Stream</span>
-</div>
+        <div class="bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-[11px] sm:text-xs font-semibold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl border border-[#C87389]/40 flex items-center space-x-1 shadow-sm">
+          <span>🍵 Cozy Sanctuary Stream</span>
+        </div>
       </div>
 
       <!-- Desktop Keyboard Shortcut Hint -->
       <div class="hidden lg:flex items-center space-x-1.5 text-[11px] font-fredoka text-[#C87389] dark:text-[#FFCCE1]/80 bg-[#FFF5D7]/80 dark:bg-[#251F30]/80 px-3 py-1 rounded-full border border-[#C87389]/30">
-        <span>💡 Tip: Press <kbd class="px-1.5 py-0.5 bg-white dark:bg-[#34293D] rounded border text-[10px]">1</kbd> - <kbd class="px-1.5 py-0.5 bg-white dark:bg-[#34293D] rounded border text-[10px]">5</kbd> on PC keyboard to switch tabs</span>
+        <span>💡 Tip: Press <kbd class="px-1.5 py-0.5 bg-white dark:bg-[#34293D] rounded border text-[10px]">1</kbd> - <kbd class="px-1.5 py-0.5 bg-white dark:bg-[#34293D] rounded border text-[10px]">5</kbd> to switch tabs</span>
       </div>
 
       <!-- Action Toggles -->
-      <div class="flex items-center space-x-2">
-        <button id="audio-toggle" type="button" class="bg-[#FFF5D7] hover:bg-white dark:bg-[#34293D] dark:hover:bg-[#423352] text-[#C87389] dark:text-[#FFCCE1] active:scale-95 transition-all px-3 py-1.5 rounded-full font-fredoka text-xs font-semibold border border-[#C87389]/40 flex items-center space-x-1.5 shadow-sm min-h-[36px]">
+      <div class="flex items-center space-x-1.5 sm:space-x-2">
+        <button id="audio-toggle" type="button" class="bg-[#FFF5D7] hover:bg-white dark:bg-[#34293D] dark:hover:bg-[#423352] text-[#C87389] dark:text-[#FFCCE1] active:scale-95 transition-all px-2.5 sm:px-3 py-1.5 rounded-full font-fredoka text-xs font-semibold border border-[#C87389]/40 flex items-center space-x-1 shadow-sm min-h-[36px]">
           <span id="audio-icon" aria-hidden="true">▶</span>
           <span id="audio-label">Sound</span>
         </button>
@@ -527,7 +543,7 @@
         <button 
           type="button" 
           onclick="toggleOverwhelmMode(true)"
-          class="bg-[#FFF5D7] hover:bg-white dark:bg-[#34293D] dark:hover:bg-[#423352] text-[#6E8B54] dark:text-[#9CAF88] active:scale-95 transition-all px-3 py-1.5 rounded-full font-fredoka text-xs font-semibold border border-[#6E8B54]/40 flex items-center space-x-1.5 shadow-sm min-h-[36px]"
+          class="bg-[#FFF5D7] hover:bg-white dark:bg-[#34293D] dark:hover:bg-[#423352] text-[#6E8B54] dark:text-[#9CAF88] active:scale-95 transition-all px-2.5 sm:px-3 py-1.5 rounded-full font-fredoka text-xs font-semibold border border-[#6E8B54]/40 flex items-center space-x-1 shadow-sm min-h-[36px]"
           title="Zero-Brainpower Overwhelm Mode">
           <span aria-hidden="true">🌿</span>
           <span class="hidden sm:inline">Overwhelm</span>
@@ -541,43 +557,43 @@
     </div>
   </header>
 
-  <!-- SOMATIC UNCLENCHING STRIP (Body-First Release Banner - Responsive Grid) -->
-  <section class="max-w-xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 mb-5">
+  <!-- SOMATIC UNCLENCHING STRIP -->
+  <section class="max-w-xl md:max-w-4xl lg:max-w-6xl mx-auto px-3 sm:px-4 mb-4 sm:mb-5">
     <div class="glass-card rounded-2xl p-3 sm:p-4 border border-[#6E8B54]/40 text-center space-y-2 shadow-sm">
       <div class="flex items-center justify-center space-x-2">
         <span class="text-xs sm:text-sm" aria-hidden="true">🌿</span>
-        <p class="font-fredoka text-xs sm:text-sm text-[#556B42] dark:text-[#9CAF88] font-bold uppercase tracking-wider">
+        <p class="font-fredoka text-[11px] sm:text-xs md:text-sm text-[#556B42] dark:text-[#9CAF88] font-bold uppercase tracking-wider">
           SOMATIC TENSION RELEASE (TAP TO UNCLENCH)
         </p>
       </div>
 
-      <!-- Interactive Somatic Chips: 2x2 grid on mobile, 4-in-a-row on desktop -->
+      <!-- Interactive Somatic Chips: 2x2 grid on mobile, 4-in-a-row on tablet/desktop -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm font-semibold max-w-4xl mx-auto">
         <button 
           type="button" 
           onclick="toggleSomaticChip(this, 'tongue')" 
-          class="somatic-chip bg-[#FFF5D7] dark:bg-[#251F30] text-[#3D2F37] dark:text-[#E6DFEC] px-3 py-2 rounded-2xl border border-[#6E8B54]/30 hover:border-[#6E8B54] hover:bg-white dark:hover:bg-[#34293D] transition-all cursor-pointer active:scale-95">
+          class="somatic-chip bg-[#FFF5D7] dark:bg-[#251F30] text-[#3D2F37] dark:text-[#E6DFEC] px-2.5 sm:px-3 py-2 rounded-2xl border border-[#6E8B54]/30 hover:border-[#6E8B54] hover:bg-white dark:hover:bg-[#34293D] transition-all cursor-pointer active:scale-95">
           👅 Drop tongue
         </button>
 
         <button 
           type="button" 
           onclick="toggleSomaticChip(this, 'jaw')" 
-          class="somatic-chip bg-[#FFF5D7] dark:bg-[#251F30] text-[#3D2F37] dark:text-[#E6DFEC] px-3 py-2 rounded-2xl border border-[#6E8B54]/30 hover:border-[#6E8B54] hover:bg-white dark:hover:bg-[#34293D] transition-all cursor-pointer active:scale-95">
+          class="somatic-chip bg-[#FFF5D7] dark:bg-[#251F30] text-[#3D2F37] dark:text-[#E6DFEC] px-2.5 sm:px-3 py-2 rounded-2xl border border-[#6E8B54]/30 hover:border-[#6E8B54] hover:bg-white dark:hover:bg-[#34293D] transition-all cursor-pointer active:scale-95">
           😬 Unclench jaw
         </button>
 
         <button 
           type="button" 
           onclick="toggleSomaticChip(this, 'shoulders')" 
-          class="somatic-chip bg-[#FFF5D7] dark:bg-[#251F30] text-[#3D2F37] dark:text-[#E6DFEC] px-3 py-2 rounded-2xl border border-[#6E8B54]/30 hover:border-[#6E8B54] hover:bg-white dark:hover:bg-[#34293D] transition-all cursor-pointer active:scale-95">
+          class="somatic-chip bg-[#FFF5D7] dark:bg-[#251F30] text-[#3D2F37] dark:text-[#E6DFEC] px-2.5 sm:px-3 py-2 rounded-2xl border border-[#6E8B54]/30 hover:border-[#6E8B54] hover:bg-white dark:hover:bg-[#34293D] transition-all cursor-pointer active:scale-95">
           😮‍💨 Drop shoulders
         </button>
 
         <button 
           type="button" 
           onclick="toggleSomaticChip(this, 'belly')" 
-          class="somatic-chip bg-[#FFF5D7] dark:bg-[#251F30] text-[#3D2F37] dark:text-[#E6DFEC] px-3 py-2 rounded-2xl border border-[#6E8B54]/30 hover:border-[#6E8B54] hover:bg-white dark:hover:bg-[#34293D] transition-all cursor-pointer active:scale-95">
+          class="somatic-chip bg-[#FFF5D7] dark:bg-[#251F30] text-[#3D2F37] dark:text-[#E6DFEC] px-2.5 sm:px-3 py-2 rounded-2xl border border-[#6E8B54]/30 hover:border-[#6E8B54] hover:bg-white dark:hover:bg-[#34293D] transition-all cursor-pointer active:scale-95">
           🍓 Soften belly
         </button>
       </div>
@@ -585,30 +601,30 @@
   </section>
 
   <!-- Main Sanctuary Shell -->
-  <main class="relative z-10 max-w-xl md:max-w-4xl lg:max-w-6xl mx-auto px-4 space-y-5">
+  <main class="relative z-10 max-w-xl md:max-w-4xl lg:max-w-6xl mx-auto px-3 sm:px-4 space-y-4 sm:space-y-5">
 
-    <!-- Header & Co-Regulation Anchor Badge -->
-    <section class="text-center space-y-2 pt-1">
-      <div class="inline-flex items-center space-x-2 bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/50 px-4 py-1.5 rounded-full shadow-sm">
+    <!-- Header Banner -->
+    <section class="text-center space-y-1.5 sm:space-y-2 pt-1">
+      <div class="inline-flex items-center space-x-2 bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/50 px-3.5 py-1 sm:py-1.5 rounded-full shadow-sm">
         <span class="w-2.5 h-2.5 rounded-full bg-[#6E8B54] animate-pulse"></span>
         <span class="font-fredoka text-xs sm:text-sm font-semibold text-[#556B42] dark:text-[#9CAF88]">Safe Haven 🍵</span>
       </div>
       
-      <h1 class="font-fredoka text-3xl sm:text-4xl md:text-5xl text-[#C87389] dark:text-[#FFCCE1] font-bold drop-shadow-sm tracking-tight">
+      <h1 class="font-fredoka text-2xl sm:text-4xl md:text-5xl text-[#C87389] dark:text-[#FFCCE1] font-bold drop-shadow-sm tracking-tight px-2">
         The Strawberry-Matcha Corner
       </h1>
-      <p class="text-xs sm:text-sm md:text-base text-[#556B42] dark:text-[#A8C3A0] font-medium max-w-xl mx-auto leading-relaxed">
+      <p class="text-xs sm:text-sm md:text-base text-[#556B42] dark:text-[#A8C3A0] font-medium max-w-xl mx-auto leading-relaxed px-4">
         No replies needed. No demands. Just a safe harbor where you can put down your burdens and rest.
       </p>
     </section>
 
-    <!-- Tabbed Navigation Bar (Responsive Pill Row) -->
+    <!-- Tabbed Navigation Bar -->
     <nav class="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto py-2 px-1 no-scrollbar border-b border-[#C87389]/20 pb-3" aria-label="Sanctuary Navigation">
       <button 
         type="button"
         onclick="switchTab('letter')" 
         id="tab-btn-letter"
-        class="tab-btn active bg-[#C87389] text-white font-fredoka text-xs sm:text-sm font-bold px-4 py-2.5 rounded-2xl shadow-md transition-all border border-[#C87389]/50 flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]">
+        class="tab-btn active bg-[#C87389] text-white font-fredoka text-xs sm:text-sm font-bold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl shadow-md transition-all border border-[#C87389]/50 flex items-center space-x-1.5 sm:space-x-2 shrink-0 active:scale-95 min-h-[42px] sm:min-h-[44px]">
         <span aria-hidden="true">💌</span>
         <span>Kuya's Letter</span>
         <span class="hidden md:inline text-[10px] opacity-75 bg-black/10 px-1.5 py-0.5 rounded">1</span>
@@ -618,7 +634,7 @@
         type="button"
         onclick="switchTab('reminders')" 
         id="tab-btn-reminders"
-        class="tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#556B42] dark:text-[#9CAF88] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl border border-[#6E8B54]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]">
+        class="tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#556B42] dark:text-[#9CAF88] font-fredoka text-xs sm:text-sm font-semibold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl border border-[#6E8B54]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-1.5 sm:space-x-2 shrink-0 active:scale-95 min-h-[42px] sm:min-h-[44px]">
         <span aria-hidden="true">🍵</span>
         <span>Heart & Validation</span>
         <span class="hidden md:inline text-[10px] opacity-75 bg-black/10 px-1.5 py-0.5 rounded">2</span>
@@ -628,7 +644,7 @@
         type="button"
         onclick="switchTab('shamebuster')" 
         id="tab-btn-shamebuster"
-        class="tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]">
+        class="tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-1.5 sm:space-x-2 shrink-0 active:scale-95 min-h-[42px] sm:min-h-[44px]">
         <span aria-hidden="true">🌸</span>
         <span>Safe Harbor & Vault</span>
         <span class="hidden md:inline text-[10px] opacity-75 bg-black/10 px-1.5 py-0.5 rounded">3</span>
@@ -638,45 +654,44 @@
         type="button"
         onclick="switchTab('sleep')" 
         id="tab-btn-sleep"
-        class="tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]">
+        class="tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-1.5 sm:space-x-2 shrink-0 active:scale-95 min-h-[42px] sm:min-h-[44px]">
         <span aria-hidden="true">🌙</span>
         <span>Sleep & Breathe</span>
         <span class="hidden md:inline text-[10px] opacity-75 bg-black/10 px-1.5 py-0.5 rounded">4</span>
       </button>
 
       <button 
-  type="button"
-  onclick="switchTab('cinema')" 
-  id="tab-btn-cinema"
-  class="tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]">
-  <span aria-hidden="true">🎨</span>
-  <span>Isa's Doodle Nook</span>
-  <span class="hidden md:inline text-[10px] opacity-75 bg-black/10 px-1.5 py-0.5 rounded">5</span>
-</button>
+        type="button"
+        onclick="switchTab('cinema')" 
+        id="tab-btn-cinema"
+        class="tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-1.5 sm:space-x-2 shrink-0 active:scale-95 min-h-[42px] sm:min-h-[44px]">
+        <span aria-hidden="true">🎨</span>
+        <span>Isa's Doodle Nook</span>
+        <span class="hidden md:inline text-[10px] opacity-75 bg-black/10 px-1.5 py-0.5 rounded">5</span>
+      </button>
     </nav>
 
     <!-- TAB 1: KUYA'S LETTER -->
     <div id="tab-panel-letter" class="tab-panel tab-content-panel space-y-5">
-      <div class="envelope-wrapper flex justify-center py-2">
-        <!-- Envelope Container (Interactive Toggle Card) -->
-        <div id="envelope" class="envelope flex flex-col justify-between p-6 overflow-hidden" tabindex="0" role="button" aria-label="Open or retract the letter for Isa">
+      <div class="envelope-wrapper flex justify-center py-1 sm:py-2">
+        <div id="envelope" class="envelope flex flex-col justify-between p-4 sm:p-6 overflow-hidden" tabindex="0" role="button" aria-label="Open or retract the letter for Isa">
           <div class="envelope-flap"></div>
           
           <div class="flex justify-between items-start z-20">
-            <div class="bg-[#FFF5D7]/95 dark:bg-[#251F30]/95 px-3 py-1.5 rounded-xl border border-[#C87389]/40 text-xs font-fredoka text-[#C87389] dark:text-[#FFCCE1]">
+            <div class="bg-[#FFF5D7]/95 dark:bg-[#251F30]/95 px-2.5 py-1 rounded-xl border border-[#C87389]/40 text-[11px] sm:text-xs font-fredoka text-[#C87389] dark:text-[#FFCCE1]">
               NO REPLY NEEDED 📬
             </div>
-            <div class="w-10 h-12 bg-[#6E8B54]/20 rounded-lg border border-dashed border-[#6E8B54] flex items-center justify-center text-lg" aria-hidden="true">
+            <div class="w-9 h-11 sm:w-10 sm:h-12 bg-[#6E8B54]/20 rounded-lg border border-dashed border-[#6E8B54] flex items-center justify-center text-base sm:text-lg" aria-hidden="true">
               🌸
             </div>
           </div>
 
-          <div class="text-center z-20 my-auto pointer-events-none">
-            <div id="envelope-badge" class="inline-flex items-center space-x-2 bg-[#FFF5D7] dark:bg-[#34293D] text-[#C87389] dark:text-[#FFCCE1] border-2 border-[#C87389] font-fredoka text-xs sm:text-sm md:text-base font-semibold px-5 py-2.5 rounded-full shadow-md transition-all duration-300">
-              <span id="envelope-badge-text">Open when your mind feels heavy, Isa</span>
-              <span id="envelope-badge-icon" class="text-lg" aria-hidden="true">🍓</span>
+          <div class="text-center z-20 my-auto pointer-events-none py-2">
+            <div id="envelope-badge" class="inline-flex items-center space-x-1.5 sm:space-x-2 bg-[#FFF5D7] dark:bg-[#34293D] text-[#C87389] dark:text-[#FFCCE1] border-2 border-[#C87389] font-fredoka text-xs sm:text-sm md:text-base font-semibold px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-md transition-all duration-300 max-w-[92%] mx-auto">
+              <span id="envelope-badge-text" class="truncate">Open when your mind feels heavy, Isa</span>
+              <span id="envelope-badge-icon" class="text-base sm:text-lg shrink-0" aria-hidden="true">🍓</span>
             </div>
-            <p id="envelope-subtext" class="text-xs text-[#C87389] dark:text-[#FFCCE1] font-semibold mt-2 transition-all">Tap envelope or press Enter to unroll</p>
+            <p id="envelope-subtext" class="text-[11px] sm:text-xs text-[#C87389] dark:text-[#FFCCE1] font-semibold mt-2 transition-all">Tap envelope or press Enter to unroll</p>
           </div>
 
           <div class="flex justify-between items-end text-xs text-[#C87389] dark:text-[#FFCCE1] font-fredoka z-20 font-bold">
@@ -688,44 +703,43 @@
 
       <!-- Unfolded Letter Body -->
       <div id="letter-container" class="letter-paper max-w-3xl mx-auto">
-        <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-5 border-2 border-[#C87389]/40 relative shadow-xl">
-          <div class="flex items-center justify-between border-b border-[#C87389]/30 pb-4 flex-wrap gap-2">
+        <div class="glass-card rounded-3xl p-5 sm:p-8 space-y-4 sm:space-y-5 border-2 border-[#C87389]/40 relative shadow-xl">
+          <div class="flex items-center justify-between border-b border-[#C87389]/30 pb-3 sm:pb-4 flex-wrap gap-2">
             <div class="flex items-center space-x-2">
-              <span class="text-xl" aria-hidden="true">📜</span>
-              <h2 class="font-fredoka text-lg sm:text-xl text-[#C87389] dark:text-[#FFCCE1] font-bold">A Safe Harbor Reminder</h2>
+              <span class="text-lg sm:text-xl" aria-hidden="true">📜</span>
+              <h2 class="font-fredoka text-base sm:text-xl text-[#C87389] dark:text-[#FFCCE1] font-bold">A Safe Harbor Reminder</h2>
             </div>
             
             <div class="flex items-center space-x-2">
               <span class="text-xs bg-[#FFCCE1] dark:bg-[#52344A] text-[#C87389] dark:text-[#FFCCE1] font-bold font-fredoka px-3 py-1 rounded-full hidden sm:inline-block">
                 UNCONDITIONAL ANCHOR 🌸
               </span>
-              <!-- Header Retract Button -->
               <button 
                 type="button" 
                 onclick="toggleEnvelope()"
-                class="bg-[#FFF5D7] hover:bg-white dark:bg-[#34293D] dark:hover:bg-[#423352] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs font-bold px-3.5 py-1.5 rounded-full border border-[#C87389]/50 shadow-sm active:scale-95 transition-all flex items-center space-x-1.5 cursor-pointer">
+                class="bg-[#FFF5D7] hover:bg-white dark:bg-[#34293D] dark:hover:bg-[#423352] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs font-bold px-3 py-1.5 rounded-full border border-[#C87389]/50 shadow-sm active:scale-95 transition-all flex items-center space-x-1 cursor-pointer min-h-[36px]">
                 <span>Fold & Retract</span>
                 <span aria-hidden="true">✉️</span>
               </button>
             </div>
           </div>
 
-          <div class="text-sm sm:text-base text-[#3D2F37] dark:text-[#E6DFEC] leading-relaxed space-y-4 font-medium">
-            <p class="font-bold text-[#C87389] dark:text-[#FFCCE1] text-lg font-fredoka">Isa, 🍓</p>
+          <div class="text-xs sm:text-base text-[#3D2F37] dark:text-[#E6DFEC] leading-relaxed space-y-3 sm:space-y-4 font-medium">
+            <p class="font-bold text-[#C87389] dark:text-[#FFCCE1] text-base sm:text-lg font-fredoka">Isa, 🍓</p>
             
             <p>
               I know how exhausting it gets when you feel like you have to be the one who has everything together. You have to understand that forcing yourself to study even when you are already at your limit will naturally make your mind feel completely overcrowded. It’s so easy to spiral, shut down, and feel like you're letting people down.
             </p>
             
             <p>
-              Listen to me very carefully: <span class="bg-[#FFCCE1] dark:bg-[#52344A] px-2.5 py-1 rounded-lg text-[#A04E64] dark:text-[#FFCCE1] font-bold inline-block">Your worth as a human being is completely intact.</span> It does not change based on how much you accomplish today, how tired you are, or whether an exam went well or not.
+              Listen to me very carefully: <span class="bg-[#FFCCE1] dark:bg-[#52344A] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg text-[#A04E64] dark:text-[#FFCCE1] font-bold inline-block">Your worth as a human being is completely intact.</span> It does not change based on how much you accomplish today, how tired you are, or whether an exam went well or not.
             </p>
 
             <p>
               You are <strong>never</strong> OA for feeling overwhelmed. You are <strong>never</strong> a burden when you are struggling. You don't have to earn your rest like it's a prize, and most importantly you don't need to feel bad and get disappointed for being human, exhausted, or confused.
             </p>
 
-            <div class="bg-[#6E8B54]/15 border-l-4 border-[#6E8B54] p-4 rounded-r-2xl text-[#475B37] dark:text-[#B2CEA4] font-semibold italic space-y-1 text-sm sm:text-base">
+            <div class="bg-[#6E8B54]/15 border-l-4 border-[#6E8B54] p-3 sm:p-4 rounded-r-2xl text-[#475B37] dark:text-[#B2CEA4] font-semibold italic space-y-1 text-xs sm:text-base">
               <p>"You don't need to text back or explain anything. Just know that I am here when you need an emotional anchor, you can be vulnerable with your kuya anytime you need to. I am so proud of who you are, not for your scores, but for the person that you are and to become."</p>
             </div>
 
@@ -733,24 +747,23 @@
               Take a long deep breath, and relax your entire body and give yourself permission to stop carrying the world all the time. I will always be behind your back no matter what happens. You will get through this, step by step, no matter how hard it feels right now.
             </p>
 
-            <p class="pt-2 font-bold text-[#C87389] dark:text-[#FFCCE1] text-base sm:text-lg">
+            <p class="pt-2 font-bold text-[#C87389] dark:text-[#FFCCE1] text-sm sm:text-lg">
               Palagi mong kakampi, Isa. Always. ✨
             </p>
           </div>
 
-          <div class="pt-4 border-t border-[#C87389]/20 flex items-center justify-between flex-wrap gap-3">
-            <!-- Bottom Retract Action Button -->
+          <div class="pt-3 sm:pt-4 border-t border-[#C87389]/20 flex items-center justify-between flex-wrap gap-3">
             <button 
               type="button" 
               onclick="toggleEnvelope()"
-              class="bg-[#C87389] hover:bg-[#A04E64] text-white font-fredoka text-xs sm:text-sm font-semibold px-4.5 py-2.5 rounded-2xl shadow-md active:scale-95 transition-all flex items-center space-x-2 border border-[#A04E64]/30">
+              class="bg-[#C87389] hover:bg-[#A04E64] text-white font-fredoka text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl shadow-md active:scale-95 transition-all flex items-center space-x-2 border border-[#A04E64]/30 min-h-[42px]">
               <span aria-hidden="true">✉️</span>
               <span>Fold Letter & Store Away</span>
             </button>
 
             <div class="text-right">
-              <p class="font-fredoka text-xs text-[#C87389] dark:text-[#FFCCE1]/80 uppercase tracking-widest font-semibold">With zero expectations,</p>
-              <p class="font-fredoka text-sm font-bold text-[#C87389] dark:text-[#FFCCE1]">Your Kuya 🌸</p>
+              <p class="font-fredoka text-[10px] sm:text-xs text-[#C87389] dark:text-[#FFCCE1]/80 uppercase tracking-widest font-semibold">With zero expectations,</p>
+              <p class="font-fredoka text-xs sm:text-sm font-bold text-[#C87389] dark:text-[#FFCCE1]">Your Kuya 🌸</p>
             </div>
           </div>
         </div>
@@ -758,94 +771,90 @@
     </div>
 
     <!-- TAB 2: HEART & TARGETED EMOTION VALIDATION -->
-    <div id="tab-panel-reminders" class="tab-panel tab-content-panel hidden space-y-5">
+    <div id="tab-panel-reminders" class="tab-panel tab-content-panel hidden space-y-4 sm:space-y-5">
       <div class="flex items-center space-x-2 px-1">
-        <span class="text-lg" aria-hidden="true">🍵</span>
-        <h3 class="font-fredoka text-lg text-[#556B42] dark:text-[#9CAF88] font-bold">Targeted Emotion Validation</h3>
+        <span class="text-base sm:text-lg" aria-hidden="true">🍵</span>
+        <h3 class="font-fredoka text-base sm:text-lg text-[#556B42] dark:text-[#9CAF88] font-bold">Targeted Emotion Validation</h3>
       </div>
 
-      <!-- DESKTOP / MOBILE GRID LAYOUT FOR HEART VALIDATION -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5">
         
-        <!-- TARGETED EMOTION SELECTOR & DISPLAY (Takes 2 cols on PC) -->
-        <div class="lg:col-span-2 glass-card-matcha rounded-3xl p-5 sm:p-6 space-y-4 border-2 border-[#6E8B54]/40 shadow-sm flex flex-col justify-between">
+        <div class="lg:col-span-2 glass-card-matcha rounded-3xl p-4 sm:p-6 space-y-4 border-2 border-[#6E8B54]/40 shadow-sm flex flex-col justify-between">
           <div class="space-y-1">
             <p class="font-fredoka text-xs sm:text-sm text-[#556B42] dark:text-[#9CAF88] font-bold uppercase tracking-wide">Where does it hurt right now, Isa?</p>
             <p class="text-xs sm:text-sm text-[#3D2F37] dark:text-[#E6DFEC]">Tap the category that fits your heavy feeling for targeted reassurance.</p>
           </div>
 
-          <!-- Emotion Category Chips Grid: 2 cols on mobile, 4 cols on tablet/PC -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-left">
-  <button 
-    type="button" 
-    onclick="showTargetedValidation('grades', this)"
-    class="emotion-chip p-3 rounded-2xl bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/40 hover:border-[#6E8B54] active:scale-95 transition-all flex flex-col sm:flex-row items-center sm:items-start space-y-1 sm:space-y-0 sm:space-x-2 text-center sm:text-left min-h-[56px]">
-    <span class="text-xl">😞</span>
-    <span class="font-fredoka text-xs text-[#475B37] dark:text-[#9CAF88] font-bold">Panic about grades</span>
-  </button>
+          <!-- Emotion Category Chips Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 text-left">
+            <button 
+              type="button" 
+              onclick="showTargetedValidation('grades', this)"
+              class="emotion-chip p-2.5 sm:p-3 rounded-2xl bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/40 hover:border-[#6E8B54] active:scale-95 transition-all flex flex-col sm:flex-row items-center sm:items-start space-y-1 sm:space-y-0 sm:space-x-2 text-center sm:text-left min-h-[56px]">
+              <span class="text-lg sm:text-xl">😞</span>
+              <span class="font-fredoka text-[11px] sm:text-xs text-[#475B37] dark:text-[#9CAF88] font-bold">Panic about grades</span>
+            </button>
 
-  <button 
-    type="button" 
-    onclick="showTargetedValidation('unproductive', this)"
-    class="emotion-chip p-3 rounded-2xl bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/40 hover:border-[#6E8B54] active:scale-95 transition-all flex flex-col sm:flex-row items-center sm:items-start space-y-1 sm:space-y-0 sm:space-x-2 text-center sm:text-left min-h-[56px]">
-    <span class="text-xl">🩹</span>
-    <span class="font-fredoka text-xs text-[#475B37] dark:text-[#9CAF88] font-bold">Felt unproductive</span>
-  </button>
+            <button 
+              type="button" 
+              onclick="showTargetedValidation('unproductive', this)"
+              class="emotion-chip p-2.5 sm:p-3 rounded-2xl bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/40 hover:border-[#6E8B54] active:scale-95 transition-all flex flex-col sm:flex-row items-center sm:items-start space-y-1 sm:space-y-0 sm:space-x-2 text-center sm:text-left min-h-[56px]">
+              <span class="text-lg sm:text-xl">🩹</span>
+              <span class="font-fredoka text-[11px] sm:text-xs text-[#475B37] dark:text-[#9CAF88] font-bold">Felt unproductive</span>
+            </button>
 
-  <button 
-    type="button" 
-    onclick="showTargetedValidation('cried', this)"
-    class="emotion-chip p-3 rounded-2xl bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/40 hover:border-[#6E8B54] active:scale-95 transition-all flex flex-col sm:flex-row items-center sm:items-start space-y-1 sm:space-y-0 sm:space-x-2 text-center sm:text-left min-h-[56px]">
-    <span class="text-xl">🌊</span>
-    <span class="font-fredoka text-xs text-[#475B37] dark:text-[#9CAF88] font-bold">Cried & embarrassed</span>
-  </button>
+            <button 
+              type="button" 
+              onclick="showTargetedValidation('cried', this)"
+              class="emotion-chip p-2.5 sm:p-3 rounded-2xl bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/40 hover:border-[#6E8B54] active:scale-95 transition-all flex flex-col sm:flex-row items-center sm:items-start space-y-1 sm:space-y-0 sm:space-x-2 text-center sm:text-left min-h-[56px]">
+              <span class="text-lg sm:text-xl">🌊</span>
+              <span class="font-fredoka text-[11px] sm:text-xs text-[#475B37] dark:text-[#9CAF88] font-bold">Cried & embarrassed</span>
+            </button>
 
-  <button 
-    type="button" 
-    onclick="showTargetedValidation('burntout', this)"
-    class="emotion-chip p-3 rounded-2xl bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/40 hover:border-[#6E8B54] active:scale-95 transition-all flex flex-col sm:flex-row items-center sm:items-start space-y-1 sm:space-y-0 sm:space-x-2 text-center sm:text-left min-h-[56px]">
-    <span class="text-xl">🔋</span>
-    <span class="font-fredoka text-xs text-[#475B37] dark:text-[#9CAF88] font-bold">Completely burnt out</span>
-  </button>
-</div>
-
-          <!-- Dynamic Targeted Validation Text Display -->
-<div id="validation-display-box" 
-     class="bg-[#FFF5D7] dark:bg-[#251F30] border-2 border-[#6E8B54]/50 p-5 rounded-2xl min-h-[120px] flex items-center justify-center transition-all duration-300 shadow-inner my-2" 
-     aria-live="polite" 
-     aria-atomic="true">
-  <p id="validation-text" class="text-xs sm:text-sm md:text-base font-bold text-[#475B37] dark:text-[#B2CEA4] leading-relaxed text-center">
-    "Select an option above or tap the matcha cup for a gentle reminder from Kuya. 🌿"
-  </p>
-</div>
-        </div>
-
-        <!-- MATCHA AFFIRMATION CUP DRAW (Takes 1 col on PC) -->
-        <div class="lg:col-span-1 glass-card rounded-3xl p-5 sm:p-6 text-center space-y-4 border-2 border-[#C87389]/30 flex flex-col justify-between">
-          <div>
-            <p class="font-fredoka text-xs sm:text-sm text-[#C87389] dark:text-[#FFCCE1] font-bold uppercase tracking-wide">Heart Affirmation Draw</p>
-            <p class="text-xs text-[#3D2F37] dark:text-[#E6DFEC] mt-1 font-medium">Click the cup for a surprise reminder</p>
+            <button 
+              type="button" 
+              onclick="showTargetedValidation('burntout', this)"
+              class="emotion-chip p-2.5 sm:p-3 rounded-2xl bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/40 hover:border-[#6E8B54] active:scale-95 transition-all flex flex-col sm:flex-row items-center sm:items-start space-y-1 sm:space-y-0 sm:space-x-2 text-center sm:text-left min-h-[56px]">
+              <span class="text-lg sm:text-xl">🔋</span>
+              <span class="font-fredoka text-[11px] sm:text-xs text-[#475B37] dark:text-[#9CAF88] font-bold">Completely burnt out</span>
+            </button>
           </div>
 
-          <div class="relative inline-block my-2">
-  <span class="steam-particle steam-1" aria-hidden="true">☁️</span>
-  <span class="steam-particle steam-2" aria-hidden="true">☁️</span>
-  <span class="steam-particle steam-3" aria-hidden="true">☁️</span>
-  
-  <button 
-    type="button"
-    id="matcha-cup" 
-    class="text-6xl cursor-pointer transition-transform hover:scale-110 active:scale-95 inline-block select-none filter drop-shadow rounded-3xl p-3 focus:outline-none focus:ring-2 focus:ring-[#6E8B54]"
-    aria-label="Draw a heart affirmation">
-    🍵
-  </button>
-</div>
+          <div id="validation-display-box" 
+               class="bg-[#FFF5D7] dark:bg-[#251F30] border-2 border-[#6E8B54]/50 p-4 sm:p-5 rounded-2xl min-h-[110px] flex items-center justify-center transition-all duration-300 shadow-inner my-1.5" 
+               aria-live="polite" 
+               aria-atomic="true">
+            <p id="validation-text" class="text-xs sm:text-sm md:text-base font-bold text-[#475B37] dark:text-[#B2CEA4] leading-relaxed text-center">
+              "Select an option above or tap the matcha cup for a gentle reminder from Kuya. 🌿"
+            </p>
+          </div>
+        </div>
+
+        <div class="lg:col-span-1 glass-card rounded-3xl p-4 sm:p-6 text-center space-y-3 sm:space-y-4 border-2 border-[#C87389]/30 flex flex-col justify-between">
+          <div>
+            <p class="font-fredoka text-xs sm:text-sm text-[#C87389] dark:text-[#FFCCE1] font-bold uppercase tracking-wide">Heart Affirmation Draw</p>
+            <p class="text-[11px] sm:text-xs text-[#3D2F37] dark:text-[#E6DFEC] mt-1 font-medium">Click the cup for a surprise reminder</p>
+          </div>
+
+          <div class="relative inline-block my-1 sm:my-2">
+            <span class="steam-particle steam-1" aria-hidden="true">☁️</span>
+            <span class="steam-particle steam-2" aria-hidden="true">☁️</span>
+            <span class="steam-particle steam-3" aria-hidden="true">☁️</span>
+            
+            <button 
+              type="button"
+              id="matcha-cup" 
+              class="text-5xl sm:text-6xl cursor-pointer transition-transform hover:scale-110 active:scale-95 inline-block select-none filter drop-shadow rounded-3xl p-3 focus:outline-none focus:ring-2 focus:ring-[#6E8B54]"
+              aria-label="Draw a heart affirmation">
+              🍵
+            </button>
+          </div>
 
           <div>
             <button 
               type="button"
               id="draw-affirmation-btn" 
-              class="w-full bg-[#6E8B54] hover:bg-[#556B42] text-white font-fredoka text-xs sm:text-sm font-semibold px-5 py-3 rounded-2xl shadow-md transition-all active:scale-95 border border-[#475B37]/30 min-h-[44px]">
+              class="w-full bg-[#6E8B54] hover:bg-[#556B42] text-white font-fredoka text-xs sm:text-sm font-semibold px-4 py-3 rounded-2xl shadow-md transition-all active:scale-95 border border-[#475B37]/30 min-h-[44px]">
               Draw Character Reminder 🍵
             </button>
           </div>
@@ -855,52 +864,48 @@
     </div>
 
     <!-- TAB 3: SAFE HARBOR, THOUGHT DISSOLVER & WORRY VAULT -->
-    <div id="tab-panel-shamebuster" class="tab-panel tab-content-panel hidden space-y-5">
+    <div id="tab-panel-shamebuster" class="tab-panel tab-content-panel hidden space-y-4 sm:space-y-5">
       <div class="flex items-center space-x-2 px-1">
-        <span class="text-lg" aria-hidden="true">🌸</span>
-        <h3 class="font-fredoka text-lg text-[#C87389] dark:text-[#FFCCE1] font-bold">Safe Harbor & Worry Vault</h3>
+        <span class="text-base sm:text-lg" aria-hidden="true">🌸</span>
+        <h3 class="font-fredoka text-base sm:text-lg text-[#C87389] dark:text-[#FFCCE1] font-bold">Safe Harbor & Worry Vault</h3>
       </div>
 
-      <!-- DESKTOP 2-COLUMN GRID (THOUGHT DISSOLVER + WORRY VAULT) -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 items-stretch">
         
-        <!-- LEFT COLUMN: REASSURANCE & THOUGHT DISSOLVER -->
         <div class="space-y-4 flex flex-col justify-between">
-          <!-- Reassurance Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div class="glass-card rounded-2xl p-4 space-y-2 border-l-4 border-l-[#C87389] border border-[#C87389]/30">
+            <div class="glass-card rounded-2xl p-3.5 sm:p-4 space-y-1.5 border-l-4 border-l-[#C87389] border border-[#C87389]/30">
               <div class="flex items-center space-x-2">
                 <span class="text-base" aria-hidden="true">🩹</span>
                 <h4 class="font-fredoka text-xs sm:text-sm font-bold text-[#C87389] dark:text-[#FFCCE1]">
                   If You Cried Today
                 </h4>
               </div>
-              <p class="text-xs text-[#3D2F37] dark:text-[#E6DFEC] leading-relaxed font-medium">
+              <p class="text-[11px] sm:text-xs text-[#3D2F37] dark:text-[#E6DFEC] leading-relaxed font-medium">
                 You do <strong>NOT</strong> have to apologize. Releasing heavy emotions is normal and healthy. Your Kuya holds zero judgment.
               </p>
             </div>
 
-            <div class="glass-card rounded-2xl p-4 space-y-2 border-l-4 border-l-[#6E8B54] border border-[#6E8B54]/30">
+            <div class="glass-card rounded-2xl p-3.5 sm:p-4 space-y-1.5 border-l-4 border-l-[#6E8B54] border border-[#6E8B54]/30">
               <div class="flex items-center space-x-2">
                 <span class="text-base" aria-hidden="true">🕊️</span>
                 <h4 class="font-fredoka text-xs sm:text-sm font-bold text-[#556B42] dark:text-[#9CAF88]">
                   Never "OA" or Too Much
                 </h4>
               </div>
-              <p class="text-xs text-[#3D2F37] dark:text-[#E6DFEC] leading-relaxed font-medium">
+              <p class="text-[11px] sm:text-xs text-[#3D2F37] dark:text-[#E6DFEC] leading-relaxed font-medium">
                 Your sensitivity is a strength. When things get heavy, you are allowed to take up space and express when you're hurt.
               </p>
             </div>
           </div>
 
-          <!-- HEAVY THOUGHT DISSOLVER -->
-          <div class="glass-card rounded-3xl p-5 space-y-3 border-2 border-[#C87389]/40 shadow-sm">
-            <div class="flex items-center justify-between border-b border-[#C87389]/20 pb-2.5">
+          <div class="glass-card rounded-3xl p-4 sm:p-5 space-y-3 border-2 border-[#C87389]/40 shadow-sm">
+            <div class="flex items-center justify-between border-b border-[#C87389]/20 pb-2">
               <div class="flex items-center space-x-2">
-                <span class="text-lg" aria-hidden="true">✨</span>
-                <h4 class="font-fredoka text-sm sm:text-base font-bold text-[#C87389] dark:text-[#FFCCE1]">Heavy Thought Dissolver</h4>
+                <span class="text-base sm:text-lg" aria-hidden="true">✨</span>
+                <h4 class="font-fredoka text-xs sm:text-base font-bold text-[#C87389] dark:text-[#FFCCE1]">Heavy Thought Dissolver</h4>
               </div>
-              <span class="text-[10px] font-fredoka font-semibold text-[#556B42] dark:text-[#9CAF88] bg-[#FFF5D7] dark:bg-[#251F30] px-2.5 py-1 rounded-full border border-[#6E8B54]/30">UNSAVED 🍃</span>
+              <span class="text-[10px] font-fredoka font-semibold text-[#556B42] dark:text-[#9CAF88] bg-[#FFF5D7] dark:bg-[#251F30] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-[#6E8B54]/30">UNSAVED 🍃</span>
             </div>
 
             <p class="text-xs sm:text-sm text-[#3D2F37] dark:text-[#E6DFEC] font-medium leading-relaxed">
@@ -912,7 +917,7 @@
               <textarea 
                 id="thought-input" 
                 placeholder="Type anything heavy here... 'I'm tired', 'I'm worried about exams'..."
-                class="w-full text-xs sm:text-sm p-3.5 rounded-2xl border-2 border-[#C87389]/30 bg-white/70 dark:bg-[#251F30]/70 text-[#3D2F37] dark:text-[#E6DFEC] focus:outline-none focus:border-[#C87389] resize-none h-24 font-medium transition-all"></textarea>
+                class="w-full text-xs sm:text-sm p-3 sm:p-3.5 rounded-2xl border-2 border-[#C87389]/30 bg-white/70 dark:bg-[#251F30]/70 text-[#3D2F37] dark:text-[#E6DFEC] focus:outline-none focus:border-[#C87389] resize-none h-20 sm:h-24 font-medium transition-all"></textarea>
               
               <button 
                 type="button"
@@ -925,15 +930,14 @@
           </div>
         </div>
 
-        <!-- RIGHT COLUMN: WORRY SAFETY DEPOSIT BOX -->
-        <div class="glass-card-matcha rounded-3xl p-5 sm:p-6 space-y-4 border-2 border-[#6E8B54]/40 shadow-sm flex flex-col justify-between h-full">
+        <div class="glass-card-matcha rounded-3xl p-4 sm:p-6 space-y-3 sm:space-y-4 border-2 border-[#6E8B54]/40 shadow-sm flex flex-col justify-between h-full">
           <div class="space-y-3">
-            <div class="flex items-center justify-between border-b border-[#6E8B54]/30 pb-3">
+            <div class="flex items-center justify-between border-b border-[#6E8B54]/30 pb-2.5">
               <div class="flex items-center space-x-2">
-                <span class="text-lg" aria-hidden="true">🔒</span>
-                <h4 class="font-fredoka text-sm sm:text-base font-bold text-[#475B37] dark:text-[#9CAF88]">Worry Safety Deposit Box</h4>
+                <span class="text-base sm:text-lg" aria-hidden="true">🔒</span>
+                <h4 class="font-fredoka text-xs sm:text-base font-bold text-[#475B37] dark:text-[#9CAF88]">Worry Safety Deposit Box</h4>
               </div>
-              <span class="text-[10px] font-fredoka font-semibold text-[#475B37] dark:text-[#9CAF88] bg-[#FFF5D7] dark:bg-[#251F30] px-2.5 py-1 rounded-full border border-[#6E8B54]/30">PARKED UNTIL MORNING 🌙</span>
+              <span class="text-[10px] font-fredoka font-semibold text-[#475B37] dark:text-[#9CAF88] bg-[#FFF5D7] dark:bg-[#251F30] px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-[#6E8B54]/30">PARKED UNTIL MORNING 🌙</span>
             </div>
 
             <p class="text-xs sm:text-sm text-[#3D2F37] dark:text-[#E6DFEC] font-medium leading-relaxed">
@@ -945,22 +949,21 @@
                 type="text" 
                 id="vault-input" 
                 placeholder="Park a task or worry here for tomorrow..." 
-                class="flex-1 text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-[#6E8B54]/40 bg-white/80 dark:bg-[#251F30]/80 text-[#3D2F37] dark:text-[#E6DFEC] focus:outline-none focus:border-[#6E8B54] min-h-[44px]">
+                class="flex-1 text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-[#6E8B54]/40 bg-white/80 dark:bg-[#251F30]/80 text-[#3D2F37] dark:text-[#E6DFEC] focus:outline-none focus:border-[#6E8B54] min-h-[44px]">
               <button 
                 type="button" 
                 onclick="parkWorryInVault()"
-                class="bg-[#6E8B54] hover:bg-[#556B42] text-white font-fredoka text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl active:scale-95 transition-all min-h-[44px] shrink-0">
+                class="bg-[#6E8B54] hover:bg-[#556B42] text-white font-fredoka text-xs sm:text-sm font-semibold px-4 sm:px-5 py-2.5 rounded-xl active:scale-95 transition-all min-h-[44px] shrink-0">
                 Lock Away 🔒
               </button>
             </div>
 
-            <!-- Parked Items Vault List Display -->
-            <div id="vault-list-container" class="space-y-2 pt-2 max-h-60 overflow-y-auto">
+            <div id="vault-list-container" class="space-y-2 pt-1 max-h-52 sm:max-h-60 overflow-y-auto">
               <!-- Dynamically populated -->
             </div>
           </div>
 
-          <div class="text-[11px] text-[#556B42] dark:text-[#9CAF88] italic text-center pt-2 border-t border-[#6E8B54]/20">
+          <div class="text-[10px] sm:text-[11px] text-[#556B42] dark:text-[#9CAF88] italic text-center pt-2 border-t border-[#6E8B54]/20">
             Stored locally in your browser. Nothing leaves your device.
           </div>
         </div>
@@ -969,31 +972,29 @@
     </div>
 
     <!-- TAB 4: SLEEP & DOUBLE BREATHING PROTOCOL -->
-    <div id="tab-panel-sleep" class="tab-panel tab-content-panel hidden space-y-5">
+    <div id="tab-panel-sleep" class="tab-panel tab-content-panel hidden space-y-4 sm:space-y-5">
       <div class="flex items-center space-x-2 px-1">
-        <span class="text-lg" aria-hidden="true">🌙</span>
-        <h3 class="font-fredoka text-lg text-[#C87389] dark:text-[#FFCCE1] font-bold">Permission to Rest & Breathe</h3>
+        <span class="text-base sm:text-lg" aria-hidden="true">🌙</span>
+        <h3 class="font-fredoka text-base sm:text-lg text-[#C87389] dark:text-[#FFCCE1] font-bold">Permission to Rest & Breathe</h3>
       </div>
 
-      <!-- DESKTOP 2-COLUMN GRID FOR SLEEP & BREATHING -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
         
-        <!-- LEFT COLUMN: BREATHING VISUALIZER -->
-        <div class="glass-card-strawberry rounded-3xl p-5 sm:p-6 text-center space-y-4 border-2 border-[#C87389]/40 shadow-sm flex flex-col justify-between">
-          <div class="space-y-3">
-            <div class="flex justify-center flex-wrap gap-2">
+        <div class="glass-card-strawberry rounded-3xl p-4 sm:p-6 text-center space-y-3 sm:space-y-4 border-2 border-[#C87389]/40 shadow-sm flex flex-col justify-between">
+          <div class="space-y-2 sm:space-y-3">
+            <div class="flex justify-center flex-wrap gap-1.5 sm:gap-2">
               <button 
                 type="button" 
                 id="btn-tech-sigh" 
                 onclick="switchBreathingTech('sigh')"
-                class="bg-[#C87389] text-white font-fredoka text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-sm border border-[#C87389] transition-all min-h-[38px]">
+                class="bg-[#C87389] text-white font-fredoka text-[11px] sm:text-xs md:text-sm font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-sm border border-[#C87389] transition-all min-h-[36px]">
                 🌿 Physiological Sigh (Fast Reset)
               </button>
               <button 
                 type="button" 
                 id="btn-tech-478" 
                 onclick="switchBreathingTech('478')"
-                class="bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2 rounded-full border border-[#C87389]/40 hover:bg-white transition-all min-h-[38px]">
+                class="bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-[11px] sm:text-xs md:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-[#C87389]/40 hover:bg-white transition-all min-h-[36px]">
                 🌸 4-7-8 Deep Calm
               </button>
             </div>
@@ -1003,14 +1004,12 @@
             </p>
           </div>
 
-          <!-- Animated Circle Container -->
-          <div class="py-4 flex flex-col items-center justify-center space-y-3 my-2">
-            <div id="breathing-circle" class="breathing-circle flex items-center justify-center text-center p-3">
+          <div class="py-2 sm:py-4 flex flex-col items-center justify-center space-y-3 my-1">
+            <div id="breathing-circle" class="breathing-circle flex items-center justify-center text-center p-2 sm:p-3">
               <span id="breathing-text" class="font-fredoka text-xs sm:text-sm md:text-base text-[#C87389] dark:text-[#402939] font-bold">Tap Start</span>
             </div>
           </div>
 
-          <!-- Breathing Start/Pause Toggle -->
           <button 
             type="button"
             id="start-breath-btn" 
@@ -1019,26 +1018,25 @@
           </button>
         </div>
 
-        <!-- RIGHT COLUMN: PERMISSION TO SLEEP CARD -->
-        <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-5 border-2 border-[#6E8B54]/40 shadow-sm flex flex-col justify-between text-center">
-          <div class="space-y-4 my-auto">
-            <div class="w-16 h-16 rounded-full bg-[#6E8B54]/20 border-2 border-[#6E8B54] flex items-center justify-center text-3xl mx-auto text-[#6E8B54]">
+        <div class="glass-card rounded-3xl p-4 sm:p-6 space-y-4 border-2 border-[#6E8B54]/40 shadow-sm flex flex-col justify-between text-center">
+          <div class="space-y-3 my-auto">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[#6E8B54]/20 border-2 border-[#6E8B54] flex items-center justify-center text-2xl sm:text-3xl mx-auto text-[#6E8B54]">
               🌙
             </div>
 
-            <div class="space-y-2">
-              <h4 class="font-fredoka text-lg sm:text-xl text-[#556B42] dark:text-[#9CAF88] font-bold">Official Rest Authorization</h4>
+            <div class="space-y-1.5 sm:space-y-2">
+              <h4 class="font-fredoka text-base sm:text-xl text-[#556B42] dark:text-[#9CAF88] font-bold">Official Rest Authorization</h4>
               <p class="text-xs sm:text-sm md:text-base text-[#3D2F37] dark:text-[#E6DFEC] leading-relaxed max-w-md mx-auto font-medium">
-                Sleep is a biological requirement for your brain to thrive. You don't need to earn it. Give yourself permission to shut down when your are exhausted.
+                Sleep is a biological requirement for your brain to thrive. You don't need to earn it. Give yourself permission to shut down when you are exhausted.
               </p>
             </div>
 
-            <div class="bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/30 p-4 rounded-2xl text-left space-y-2 text-xs sm:text-sm">
+            <div class="bg-[#FFF5D7] dark:bg-[#251F30] border border-[#6E8B54]/30 p-3 sm:p-4 rounded-2xl text-left space-y-1.5 text-xs sm:text-sm">
               <p class="font-fredoka font-bold text-[#475B37] dark:text-[#9CAF88]">Isa's Nightly Checklist:</p>
-              <ul class="space-y-1.5 text-[#3D2F37] dark:text-[#E6DFEC] font-medium">
+              <ul class="space-y-1 text-[#3D2F37] dark:text-[#E6DFEC] font-medium">
                 <li class="flex items-center space-x-2"><span>✨</span> <span>Screen brightness turned down low</span></li>
                 <li class="flex items-center space-x-2"><span>🍵</span> <span>Water or warm drink nearby</span></li>
-                <li class="flex items-center space-x-2"><span>🍓</span> <span>Relaxaed mind</span></li>
+                <li class="flex items-center space-x-2"><span>🍓</span> <span>Relaxed mind</span></li>
               </ul>
             </div>
           </div>
@@ -1046,7 +1044,7 @@
           <button 
             type="button"
             id="grant-sleep-btn" 
-            class="w-full bg-[#6E8B54] hover:bg-[#556B42] text-white font-fredoka text-xs sm:text-sm font-semibold py-3.5 rounded-2xl shadow-md transition-all active:scale-95 flex items-center justify-center space-x-2 border border-[#475B37]/30 min-h-[48px]">
+            class="w-full bg-[#6E8B54] hover:bg-[#556B42] text-white font-fredoka text-xs sm:text-sm font-semibold py-3 sm:py-3.5 rounded-2xl shadow-md transition-all active:scale-95 flex items-center justify-center space-x-2 border border-[#475B37]/30 min-h-[44px] sm:min-h-[48px]">
             <span>Permission Granted: Sleep Now 🌙</span>
           </button>
         </div>
@@ -1055,121 +1053,118 @@
     </div>
 
     <!-- TAB 5: ISA'S DOODLE & STICKER NOOK -->
-<div id="tab-panel-cinema" class="tab-panel tab-content-panel hidden space-y-5">
-  <div class="flex items-center justify-between px-1 flex-wrap gap-2">
-    <div class="flex items-center space-x-2">
-      <span class="text-xl" aria-hidden="true">🎨</span>
-      <h3 class="font-fredoka text-lg text-[#C87389] dark:text-[#FFCCE1] font-bold">Isa's Quiet Doodle Pad</h3>
-    </div>
-    <span class="text-xs font-fredoka text-[#556B42] dark:text-[#9CAF88] bg-[#FFF5D7] dark:bg-[#251F30] px-3 py-1 rounded-full border border-[#6E8B54]/30">
-      Draw anything cute • Zero pressure 🌸
-    </span>
-  </div>
+    <div id="tab-panel-cinema" class="tab-panel tab-content-panel hidden space-y-4 sm:space-y-5">
+      <div class="flex items-center justify-between px-1 flex-wrap gap-2">
+        <div class="flex items-center space-x-2">
+          <span class="text-lg sm:text-xl" aria-hidden="true">🎨</span>
+          <h3 class="font-fredoka text-base sm:text-lg text-[#C87389] dark:text-[#FFCCE1] font-bold">Isa's Quiet Doodle Pad</h3>
+        </div>
+        <span class="text-[11px] sm:text-xs font-fredoka text-[#556B42] dark:text-[#9CAF88] bg-[#FFF5D7] dark:bg-[#251F30] px-2.5 py-1 rounded-full border border-[#6E8B54]/30">
+          Draw anything cute • Zero pressure 🌸
+        </span>
+      </div>
 
-  <div class="glass-card rounded-3xl p-4 sm:p-6 space-y-4 border-2 border-[#C87389]/40 shadow-md">
-    
-    <!-- Drawing Toolbar -->
-<div class="flex flex-wrap items-center justify-between gap-3 bg-[#FFF5D7]/80 dark:bg-[#251F30]/80 p-3 rounded-2xl border border-[#C87389]/30">
-  
-  <!-- Color Palette & Spectrum Picker -->
-  <div class="flex items-center space-x-2">
-    <span class="text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] font-fredoka hidden sm:inline">Color:</span>
-    <button type="button" onclick="setDoodleColor('#C87389', this)" class="color-btn w-7 h-7 rounded-full bg-[#C87389] border-2 border-white shadow-sm ring-2 ring-[#C87389] transition-transform active:scale-90" title="Strawberry Rose"></button>
-    <button type="button" onclick="setDoodleColor('#6E8B54', this)" class="color-btn w-7 h-7 rounded-full bg-[#6E8B54] border-2 border-white shadow-sm transition-transform active:scale-90" title="Matcha Green"></button>
-    <button type="button" onclick="setDoodleColor('#3D2F37', this)" class="color-btn w-7 h-7 rounded-full bg-[#3D2F37] border-2 border-white shadow-sm transition-transform active:scale-90" title="Cozy Charcoal"></button>
-    <button type="button" onclick="setDoodleColor('#7A92C2', this)" class="color-btn w-7 h-7 rounded-full bg-[#7A92C2] border-2 border-white shadow-sm transition-transform active:scale-90" title="Soft Blue"></button>
-    <button type="button" onclick="setDoodleColor('#E5B25D', this)" class="color-btn w-7 h-7 rounded-full bg-[#E5B25D] border-2 border-white shadow-sm transition-transform active:scale-90" title="Butter Yellow"></button>
-    
-    <!-- Spectrum Color Wheel Picker -->
-    <div class="relative w-7 h-7 rounded-full overflow-hidden border-2 border-white shadow-sm ring-1 ring-[#C87389]/40 flex items-center justify-center cursor-pointer" title="Custom Color Spectrum">
-      <input 
-        type="color" 
-        id="custom-color-picker" 
-        value="#C87389" 
-        oninput="setDoodleColor(this.value, this)" 
-        onchange="setDoodleColor(this.value, this)" 
-        class="absolute -inset-2 w-12 h-12 cursor-pointer p-0 border-0 bg-transparent">
-    </div>
-  </div>
+      <div class="glass-card rounded-3xl p-3 sm:p-6 space-y-3 sm:space-y-4 border-2 border-[#C87389]/40 shadow-md">
+        
+        <!-- Drawing Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-2.5 bg-[#FFF5D7]/80 dark:bg-[#251F30]/80 p-2.5 sm:p-3 rounded-2xl border border-[#C87389]/30">
+          
+          <div class="flex items-center space-x-1.5 sm:space-x-2">
+            <span class="text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] font-fredoka hidden sm:inline">Color:</span>
+            <button type="button" onclick="setDoodleColor('#C87389', this)" class="color-btn w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#C87389] border-2 border-white shadow-sm ring-2 ring-[#C87389] transition-transform active:scale-90" title="Strawberry Rose"></button>
+            <button type="button" onclick="setDoodleColor('#6E8B54', this)" class="color-btn w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#6E8B54] border-2 border-white shadow-sm transition-transform active:scale-90" title="Matcha Green"></button>
+            <button type="button" onclick="setDoodleColor('#3D2F37', this)" class="color-btn w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#3D2F37] border-2 border-white shadow-sm transition-transform active:scale-90" title="Cozy Charcoal"></button>
+            <button type="button" onclick="setDoodleColor('#7A92C2', this)" class="color-btn w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#7A92C2] border-2 border-white shadow-sm transition-transform active:scale-90" title="Soft Blue"></button>
+            <button type="button" onclick="setDoodleColor('#E5B25D', this)" class="color-btn w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#E5B25D] border-2 border-white shadow-sm transition-transform active:scale-90" title="Butter Yellow"></button>
+            
+            <div class="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden border-2 border-white shadow-sm ring-1 ring-[#C87389]/40 flex items-center justify-center cursor-pointer" title="Custom Color Spectrum">
+              <input 
+                type="color" 
+                id="custom-color-picker" 
+                value="#C87389" 
+                oninput="setDoodleColor(this.value, this)" 
+                onchange="setDoodleColor(this.value, this)" 
+                class="absolute -inset-2 w-12 h-12 cursor-pointer p-0 border-0 bg-transparent">
+            </div>
+          </div>
 
-  <!-- Brush Size Slider & Eraser -->
-  <div class="flex items-center space-x-3">
-    <div class="flex items-center space-x-2 bg-white/70 dark:bg-[#34293D]/70 px-3 py-1 rounded-xl border border-[#C87389]/30">
-      <span class="text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] font-fredoka">Size:</span>
-      <input 
-        type="range" 
-        id="brush-size-slider" 
-        min="1" 
-        max="40" 
-        value="7" 
-        oninput="updateBrushSizeFromSlider(this.value)" 
-        class="w-20 sm:w-28 accent-[#C87389] cursor-pointer">
-      <span id="brush-size-label" class="text-xs font-bold font-fredoka text-[#C87389] dark:text-[#FFCCE1] w-7 text-right">7px</span>
-    </div>
+          <div class="flex items-center space-x-2 sm:space-x-3">
+            <div class="flex items-center space-x-1.5 bg-white/70 dark:bg-[#34293D]/70 px-2.5 py-1 rounded-xl border border-[#C87389]/30">
+              <span class="text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] font-fredoka">Size:</span>
+              <input 
+                type="range" 
+                id="brush-size-slider" 
+                min="1" 
+                max="40" 
+                value="7" 
+                oninput="updateBrushSizeFromSlider(this.value)" 
+                class="w-16 sm:w-28 accent-[#C87389] cursor-pointer">
+              <span id="brush-size-label" class="text-xs font-bold font-fredoka text-[#C87389] dark:text-[#FFCCE1] w-6 text-right">7px</span>
+            </div>
 
-    <button type="button" id="eraser-btn" onclick="toggleEraser()" class="px-3 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] border border-[#C87389]/30 hover:bg-[#FFCCE1]/30 transition-all">
-      🧹 Eraser
-    </button>
-  </div>
+            <button type="button" id="eraser-btn" onclick="toggleEraser()" class="px-2.5 sm:px-3 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] border border-[#C87389]/30 hover:bg-[#FFCCE1]/30 transition-all min-h-[32px]">
+              🧹 Eraser
+            </button>
+          </div>
 
-  <!-- Actions (Clear & Download) -->
-  <div class="flex items-center space-x-2 ml-auto">
-    <button type="button" onclick="clearDoodleCanvas()" class="px-3 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#C87389] hover:bg-red-50 dark:hover:bg-red-950/30 border border-red-200 transition-all">
-      Clear Canvas
-    </button>
-    <button type="button" onclick="downloadDoodle()" class="px-3.5 py-1 rounded-xl bg-[#6E8B54] hover:bg-[#556B42] font-fredoka text-xs font-bold text-white shadow-sm transition-all active:scale-95 flex items-center space-x-1">
-      <span>Save Doodle</span>
-      <span aria-hidden="true">💾</span>
-    </button>
-  </div>
-    </div>
-<!-- Sticker Stamp Bar -->
+          <div class="flex items-center space-x-2 ml-auto">
+            <button type="button" onclick="clearDoodleCanvas()" class="px-2.5 sm:px-3 py-1 rounded-xl bg-white dark:bg-[#34293D] font-fredoka text-xs font-bold text-[#C87389] hover:bg-red-50 dark:hover:bg-red-950/30 border border-red-200 transition-all min-h-[32px]">
+              Clear
+            </button>
+            <button type="button" onclick="downloadDoodle()" class="px-3 sm:px-3.5 py-1 rounded-xl bg-[#6E8B54] hover:bg-[#556B42] font-fredoka text-xs font-bold text-white shadow-sm transition-all active:scale-95 flex items-center space-x-1 min-h-[32px]">
+              <span>Save</span>
+              <span aria-hidden="true">💾</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sticker Stamp Bar -->
 <div class="flex items-center space-x-2 overflow-x-auto py-1 px-2 bg-[#FFF5D7]/50 dark:bg-[#251F30]/50 rounded-2xl border border-[#C87389]/20 no-scrollbar">
   <span class="text-xs font-bold text-[#C87389] dark:text-[#FFCCE1] font-fredoka shrink-0">Stamps:</span>
-  <button type="button" onclick="setStickerStamp('🍓', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Strawberry">🍓</button>
-  <button type="button" onclick="setStickerStamp('🍵', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Matcha">🍵</button>
-  <button type="button" onclick="setStickerStamp('🐾', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Paw Print">🐾</button>
-  <button type="button" onclick="setStickerStamp('🌸', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Blossom">🌸</button>
-  <button type="button" onclick="setStickerStamp('🧸', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Bear">🧸</button>
-  <button type="button" onclick="setStickerStamp('✨', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Sparkles">✨</button>
-  <button type="button" onclick="setStickerStamp('🎀', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Ribbon">🎀</button>
-  <button type="button" onclick="setStickerStamp('💖', this)" class="sticker-btn text-xl p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-transform active:scale-90" title="Heart">💖</button>
+  <button type="button" data-emoji="🍓" data-name="Strawberry" onclick="setStickerStamp('🍓', 'Strawberry', this)" class="sticker-btn text-xs sm:text-sm font-bold font-fredoka p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-all shrink-0 text-[#C87389] dark:text-[#FFCCE1]" title="Strawberry">🍓</button>
+  <button type="button" data-emoji="🍵" data-name="Matcha" onclick="setStickerStamp('🍵', 'Matcha', this)" class="sticker-btn text-xs sm:text-sm font-bold font-fredoka p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-all shrink-0 text-[#C87389] dark:text-[#FFCCE1]" title="Matcha">🍵</button>
+  <button type="button" data-emoji="🐾" data-name="Paw Print" onclick="setStickerStamp('🐾', 'Paw Print', this)" class="sticker-btn text-xs sm:text-sm font-bold font-fredoka p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-all shrink-0 text-[#C87389] dark:text-[#FFCCE1]" title="Paw Print">🐾</button>
+  <button type="button" data-emoji="🌸" data-name="Blossom" onclick="setStickerStamp('🌸', 'Blossom', this)" class="sticker-btn text-xs sm:text-sm font-bold font-fredoka p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-all shrink-0 text-[#C87389] dark:text-[#FFCCE1]" title="Blossom">🌸</button>
+  <button type="button" data-emoji="🧸" data-name="Bear" onclick="setStickerStamp('🧸', 'Bear', this)" class="sticker-btn text-xs sm:text-sm font-bold font-fredoka p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-all shrink-0 text-[#C87389] dark:text-[#FFCCE1]" title="Bear">🧸</button>
+  <button type="button" data-emoji="✨" data-name="Sparkles" onclick="setStickerStamp('✨', 'Sparkles', this)" class="sticker-btn text-xs sm:text-sm font-bold font-fredoka p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-all shrink-0 text-[#C87389] dark:text-[#FFCCE1]" title="Sparkles">✨</button>
+  <button type="button" data-emoji="🎀" data-name="Ribbon" onclick="setStickerStamp('🎀', 'Ribbon', this)" class="sticker-btn text-xs sm:text-sm font-bold font-fredoka p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-all shrink-0 text-[#C87389] dark:text-[#FFCCE1]" title="Ribbon">🎀</button>
+  <button type="button" data-emoji="💖" data-name="Heart" onclick="setStickerStamp('💖', 'Heart', this)" class="sticker-btn text-xs sm:text-sm font-bold font-fredoka p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#34293D] transition-all shrink-0 text-[#C87389] dark:text-[#FFCCE1]" title="Heart">💖</button>
 </div>
-    <!-- Drawing Canvas Box -->
-    <div class="relative w-full aspect-[4/3] sm:aspect-[16/9] bg-[#FFFDF9] dark:bg-[#1D1726] rounded-2xl overflow-hidden border-2 border-dashed border-[#C87389]/40 shadow-inner">
-     <canvas 
-  id="doodle-canvas" 
-  class="w-full h-full cursor-pen touch-none">
-</canvas>
-      <div id="canvas-hint" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 transition-opacity">
-        <p class="font-fredoka text-xs sm:text-sm text-[#C87389] dark:text-[#FFCCE1]">Doodle cute things here... 🍓✨</p>
+
+        <!-- Canvas Container -->
+        <div id="doodle-container" class="relative w-full aspect-[4/3] sm:aspect-[16/9] bg-[#FFFDF9] dark:bg-[#1D1726] rounded-2xl overflow-hidden border-2 border-dashed border-[#C87389]/40 shadow-inner touch-none">
+          <canvas 
+            id="doodle-canvas" 
+            class="w-full h-full cursor-pen touch-none">
+          </canvas>
+          <div id="canvas-hint" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 transition-opacity">
+            <p class="font-fredoka text-xs sm:text-sm text-[#C87389] dark:text-[#FFCCE1]">Doodle cute things here... 🍓✨</p>
+          </div>
+        </div>
+
       </div>
     </div>
 
-  </div>
-</div>
-
     <!-- Sanctuary Footer -->
-    <footer class="pt-6 text-center space-y-3">
-      <div class="inline-flex items-center space-x-2 bg-[#FFF5D7] dark:bg-[#251F30] border border-[#C87389]/40 px-5 py-2 rounded-full shadow-sm flex-wrap justify-center">
+    <footer class="pt-4 sm:pt-6 text-center space-y-2 sm:space-y-3">
+      <div class="inline-flex items-center space-x-2 bg-[#FFF5D7] dark:bg-[#251F30] border border-[#C87389]/40 px-4 py-1.5 rounded-full shadow-sm flex-wrap justify-center max-w-[90%] mx-auto">
         <span class="text-xs sm:text-sm font-fredoka text-[#C87389] dark:text-[#FFCCE1] font-bold">Built with care by your Kuya</span>
         <span class="text-xs" aria-hidden="true">•</span>
         <span class="text-xs sm:text-sm font-fredoka text-[#556B42] dark:text-[#9CAF88] font-bold">Zero demand space 🌸</span>
       </div>
-      <p class="text-xs text-[#C87389] dark:text-[#FFCCE1]/80 font-bold">Isa's Safe Haven • You are enough just as you are • One Step at a Time.</p>
+      <p class="text-[11px] sm:text-xs text-[#C87389] dark:text-[#FFCCE1]/80 font-bold px-2">Isa's Safe Haven • You are enough just as you are • One Step at a Time.</p>
     </footer>
 
   </main>
 
   <!-- Notification Toast Popup -->
-  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[110] hidden max-w-sm w-11/12 bg-[#FFF5D7] dark:bg-[#251F30] border-2 border-[#C87389] text-[#C87389] dark:text-[#FFCCE1] p-4 rounded-2xl shadow-2xl text-center space-y-1 toast-anim" role="status" aria-live="polite">
+  <div id="toast" class="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-[110] hidden max-w-sm w-11/12 bg-[#FFF5D7] dark:bg-[#251F30] border-2 border-[#C87389] text-[#C87389] dark:text-[#FFCCE1] p-3.5 sm:p-4 rounded-2xl shadow-2xl text-center space-y-1 toast-anim" role="status" aria-live="polite">
     <p id="toast-title" class="font-fredoka text-xs sm:text-sm font-bold"></p>
     <p id="toast-body" class="text-xs font-semibold text-[#3D2F37] dark:text-[#E6DFEC]"></p>
   </div>
 
-  <!-- Main JavaScript Logic -->
   <script>
-    // --- 1. Dim Night Mode Persistence via LocalStorage ---
+    // --- 1. Dim Night Mode Persistence ---
     const dimToggleBtn = document.getElementById('dim-toggle');
     const dimIcon = document.getElementById('dim-icon');
 
@@ -1201,7 +1196,7 @@
       );
     });
 
-    // --- 2. Zero-Brainpower Overwhelm Mode Toggle ---
+    // --- 2. Overwhelm Mode Toggle ---
     function toggleOverwhelmMode(show) {
       const overlay = document.getElementById('overwhelm-overlay');
       if (show) {
@@ -1214,7 +1209,6 @@
       }
     }
 
-    // Escape key support to exit overwhelm mode on PC
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         toggleOverwhelmMode(false);
@@ -1258,8 +1252,6 @@
       if (isNowActive) {
         btn.innerHTML = info.activeText;
         showToast("Somatic Release 🌿", info.message);
-        
-        // Light haptic feedback pulse on smartphones if available
         if (navigator.vibrate) {
           try { navigator.vibrate(35); } catch(e){}
         }
@@ -1268,38 +1260,35 @@
       }
     }
 
-    // --- 4. Tab Navigation Logic & Keyboard Shortcuts (Keys 1-5 for PC) ---
-const tabList = ['letter', 'reminders', 'shamebuster', 'sleep', 'cinema'];
+    // --- 4. Tab Navigation Logic ---
+    const tabList = ['letter', 'reminders', 'shamebuster', 'sleep', 'cinema'];
 
-function switchTab(tabId) {
-  // Auto-fold envelope & switch audio back to ambient stream when leaving letter tab
-  const env = document.getElementById('envelope');
-  if (tabId !== 'letter' && env && env.classList.contains('open')) {
-    closeEnvelope(true); // Pass true to skip unnecessary scrolling when switching tabs
-  }
+    function switchTab(tabId) {
+      const env = document.getElementById('envelope');
+      if (tabId !== 'letter' && env && env.classList.contains('open')) {
+        closeEnvelope(true);
+      }
 
-  document.querySelectorAll('.tab-panel').forEach(panel => {
-    panel.classList.add('hidden');
-  });
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.add('hidden');
+      });
 
-  const targetPanel = document.getElementById(`tab-panel-${tabId}`);
-  if (targetPanel) {
-    targetPanel.classList.remove('hidden');
-  }
+      const targetPanel = document.getElementById(`tab-panel-${tabId}`);
+      if (targetPanel) {
+        targetPanel.classList.remove('hidden');
+      }
 
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.className = "tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]";
-  });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = "tab-btn bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl border border-[#C87389]/40 hover:bg-white dark:hover:bg-[#34293D] transition-all flex items-center space-x-1.5 sm:space-x-2 shrink-0 active:scale-95 min-h-[42px] sm:min-h-[44px]";
+      });
 
-  const activeBtn = document.getElementById(`tab-btn-${tabId}`);
-  if (activeBtn) {
-    activeBtn.className = "tab-btn active bg-[#C87389] text-white font-fredoka text-xs sm:text-sm font-bold px-4 py-2.5 rounded-2xl shadow-md transition-all border border-[#C87389]/50 flex items-center space-x-2 shrink-0 active:scale-95 min-h-[44px]";
-  }
-}
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.className = "tab-btn active bg-[#C87389] text-white font-fredoka text-xs sm:text-sm font-bold px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl shadow-md transition-all border border-[#C87389]/50 flex items-center space-x-1.5 sm:space-x-2 shrink-0 active:scale-95 min-h-[42px] sm:min-h-[44px]";
+      }
+    }
 
-    // Global PC Keyboard Shortcut Switcher (Keys 1 - 5)
     document.addEventListener('keydown', (e) => {
-      // Don't trigger shortcuts if active target is an input or textarea
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
       
       const keyNum = parseInt(e.key, 10);
@@ -1318,6 +1307,7 @@ function switchTab(tabId) {
       height = canvas.height = window.innerHeight;
     }
     window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', resizeCanvas);
     resizeCanvas();
 
     const particles = [];
@@ -1350,7 +1340,7 @@ function switchTab(tabId) {
       }
     }
 
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 20; i++) {
       const p = new Particle();
       p.y = Math.random() * height;
       particles.push(p);
@@ -1369,7 +1359,6 @@ function switchTab(tabId) {
       ctx.clearRect(0, 0, width, height);
 
       if (prefersReducedMotion) {
-        // Draw static particles once and exit loop
         particles.forEach(p => p.draw());
         return;
       }
@@ -1382,108 +1371,105 @@ function switchTab(tabId) {
     }
     animateParticles();
 
-   // --- 6. Native Audio Controller ---
-const audioLetter = document.getElementById('audio-letter');
-const audioRelaxing = document.getElementById('audio-relaxing');
+    // --- 6. Audio Controller ---
+    const audioLetter = document.getElementById('audio-letter');
+    const audioRelaxing = document.getElementById('audio-relaxing');
 
-let currentAudio = audioRelaxing; // Default active track
-let isPlaying = false;
+    let currentAudio = audioRelaxing;
+    let isPlaying = false;
 
-const audioToggleBtn = document.getElementById('audio-toggle');
-const audioIcon = document.getElementById('audio-icon');
-const audioLabel = document.getElementById('audio-label');
-const eqContainer = document.getElementById('eq-container');
+    const audioToggleBtn = document.getElementById('audio-toggle');
+    const audioIcon = document.getElementById('audio-icon');
+    const audioLabel = document.getElementById('audio-label');
+    const eqContainer = document.getElementById('eq-container');
 
-function updateAudioUI(playing) {
-  isPlaying = playing;
-  if (playing) {
-    audioIcon.innerText = '⏸';
-    audioLabel.innerText = 'Pause';
-    eqContainer.classList.remove('paused');
-  } else {
-    audioIcon.innerText = '▶';
-    audioLabel.innerText = 'Sound';
-    eqContainer.classList.add('paused');
-  }
-}
-
-// Top Bar Play / Pause toggle button
-audioToggleBtn.addEventListener('click', () => {
-  if (!isPlaying) {
-    currentAudio.play().then(() => updateAudioUI(true)).catch(err => console.log(err));
-  } else {
-    currentAudio.pause();
-    updateAudioUI(false);
-  }
-});
-
-// --- 7. Interactive Envelope & Audio Switcher Logic ---
-const envelope = document.getElementById('envelope');
-const letterContainer = document.getElementById('letter-container');
-const envelopeSubtext = document.getElementById('envelope-subtext');
-const envelopeBadgeText = document.getElementById('envelope-badge-text');
-
-function openEnvelope() {
-  envelope.classList.add('open');
-  envelopeSubtext.innerText = "Letter Unrolled • Tap envelope to fold back ✉️";
-  envelopeBadgeText.innerText = "Kuya's Letter Unfolded 🌸";
-
-  // Stop 1-hour ambient track & play Landslide from start
-  audioRelaxing.pause();
-  audioLetter.currentTime = 0;
-  audioLetter.play().then(() => {
-    currentAudio = audioLetter;
-    updateAudioUI(true);
-  }).catch(err => console.log("Audio play error:", err));
-
-  setTimeout(() => {
-    letterContainer.classList.add('show');
-    letterContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, 300);
-}
-
-function closeEnvelope(skipScroll = false) {
-  letterContainer.classList.remove('show');
-  
-  if (!skipScroll) {
-    envelope.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-  // Stop Landslide & seamlessly switch to 1-hour ambient stream
-  audioLetter.pause();
-  audioRelaxing.play().then(() => {
-    currentAudio = audioRelaxing;
-    updateAudioUI(true);
-  }).catch(err => console.log("Audio play error:", err));
-
-  setTimeout(() => {
-    envelope.classList.remove('open');
-    envelopeSubtext.innerText = "Tap envelope or press Enter to unroll";
-    envelopeBadgeText.innerText = "Open when your mind feels heavy, Isa";
-    
-    if (!skipScroll) {
-      showToast("Letter Retracted ✉️", "Switched to 1-hour cozy relaxing stream 🍵");
+    function updateAudioUI(playing) {
+      isPlaying = playing;
+      if (playing) {
+        audioIcon.innerText = '⏸';
+        audioLabel.innerText = 'Pause';
+        eqContainer.classList.remove('paused');
+      } else {
+        audioIcon.innerText = '▶';
+        audioLabel.innerText = 'Sound';
+        eqContainer.classList.add('paused');
+      }
     }
-  }, 400);
-}
 
-function toggleEnvelope() {
-  if (envelope.classList.contains('open')) {
-    closeEnvelope();
-  } else {
-    openEnvelope();
-  }
-}
+    audioToggleBtn.addEventListener('click', () => {
+      if (!isPlaying) {
+        currentAudio.play().then(() => updateAudioUI(true)).catch(err => console.log(err));
+      } else {
+        currentAudio.pause();
+        updateAudioUI(false);
+      }
+    });
 
-envelope.addEventListener('click', toggleEnvelope);
-envelope.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
-    toggleEnvelope();
-  }
-});
+    // --- 7. Envelope & Audio Switcher Logic ---
+    const envelope = document.getElementById('envelope');
+    const letterContainer = document.getElementById('letter-container');
+    const envelopeSubtext = document.getElementById('envelope-subtext');
+    const envelopeBadgeText = document.getElementById('envelope-badge-text');
 
-    // --- 8. Targeted Emotion Validation Data & Switcher ---
+    function openEnvelope() {
+      envelope.classList.add('open');
+      envelopeSubtext.innerText = "Letter Unrolled • Tap envelope to fold back ✉️";
+      envelopeBadgeText.innerText = "Kuya's Letter Unfolded 🌸";
+
+      audioRelaxing.pause();
+      audioLetter.currentTime = 0;
+      audioLetter.play().then(() => {
+        currentAudio = audioLetter;
+        updateAudioUI(true);
+      }).catch(err => console.log("Audio play error:", err));
+
+      setTimeout(() => {
+        letterContainer.classList.add('show');
+        letterContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 300);
+    }
+
+    function closeEnvelope(skipScroll = false) {
+      letterContainer.classList.remove('show');
+      
+      if (!skipScroll) {
+        envelope.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      audioLetter.pause();
+      audioRelaxing.play().then(() => {
+        currentAudio = audioRelaxing;
+        updateAudioUI(true);
+      }).catch(err => console.log("Audio play error:", err));
+
+      setTimeout(() => {
+        envelope.classList.remove('open');
+        envelopeSubtext.innerText = "Tap envelope or press Enter to unroll";
+        envelopeBadgeText.innerText = "Open when your mind feels heavy, Isa";
+        
+        if (!skipScroll) {
+          showToast("Letter Retracted ✉️", "Switched to 1-hour cozy relaxing stream 🍵");
+        }
+      }, 400);
+    }
+
+    function toggleEnvelope() {
+      if (envelope.classList.contains('open')) {
+        closeEnvelope();
+      } else {
+        openEnvelope();
+      }
+    }
+
+    envelope.addEventListener('click', toggleEnvelope);
+    envelope.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleEnvelope();
+      }
+    });
+
+    // --- 8. Targeted Emotion Validation ---
     const emotionValidations = {
       grades: "A quiz score is just a result of one bad day, not who you are. High grade or low grade, I am always super proud of you no matter what. 🌸",
       unproductive: "You don't need to do a hundred things today just to deserve a break. Today was hard, and just getting through it is already enough. Rest up, Isa. 🍃",
@@ -1492,24 +1478,20 @@ envelope.addEventListener('keydown', (e) => {
     };
 
     function showTargetedValidation(type, btnElement) {
-  // Reset all emotion chips
-  document.querySelectorAll('.emotion-chip').forEach(btn => btn.classList.remove('active-emotion'));
-  
-  // Highlight clicked button
-  if (btnElement) btnElement.classList.add('active-emotion');
+      document.querySelectorAll('.emotion-chip').forEach(btn => btn.classList.remove('active-emotion'));
+      if (btnElement) btnElement.classList.add('active-emotion');
 
-  const textEl = document.getElementById('validation-text');
-  textEl.style.opacity = '0';
-  textEl.style.transform = 'translateY(6px)';
-  
-  setTimeout(() => {
-    textEl.innerText = `"${emotionValidations[type]}"`;
-    textEl.style.opacity = '1';
-    textEl.style.transform = 'translateY(0)';
-  }, 200);
-}
+      const textEl = document.getElementById('validation-text');
+      textEl.style.opacity = '0';
+      textEl.style.transform = 'translateY(6px)';
+      
+      setTimeout(() => {
+        textEl.innerText = `"${emotionValidations[type]}"`;
+        textEl.style.opacity = '1';
+        textEl.style.transform = 'translateY(0)';
+      }, 200);
+    }
 
-    // Random Matcha Cup Affirmations
     const heartAffirmations = [
       "You've been so brave carrying so much on your own, but you don't always have to be the strong one around your kuya. 🌸",
       "You don't have to prove anything or accomplish big things to be loved. You are more than enough just as you are. 🍵",
@@ -1526,101 +1508,94 @@ envelope.addEventListener('keydown', (e) => {
     const drawAffirmationBtn = document.getElementById('draw-affirmation-btn');
     const matchaCup = document.getElementById('matcha-cup');
 
-    // Replace your existing triggerAffirmationDraw function with this:
-function triggerAffirmationDraw() {
-  // Add wobble animation class
-  matchaCup.classList.add('tea-dip-anim');
-  setTimeout(() => matchaCup.classList.remove('tea-dip-anim'), 500);
+    function triggerAffirmationDraw() {
+      matchaCup.classList.add('tea-dip-anim');
+      setTimeout(() => matchaCup.classList.remove('tea-dip-anim'), 500);
 
-  const randomAffirmation = heartAffirmations[Math.floor(Math.random() * heartAffirmations.length)];
-  const textEl = document.getElementById('validation-text');
-  
-  textEl.style.opacity = '0';
-  textEl.style.transform = 'translateY(6px)';
-  
-  setTimeout(() => {
-    textEl.innerText = `"${randomAffirmation}"`;
-    textEl.style.opacity = '1';
-    textEl.style.transform = 'translateY(0)';
-  }, 200);
-}
+      const randomAffirmation = heartAffirmations[Math.floor(Math.random() * heartAffirmations.length)];
+      const textEl = document.getElementById('validation-text');
+      
+      textEl.style.opacity = '0';
+      textEl.style.transform = 'translateY(6px)';
+      
+      setTimeout(() => {
+        textEl.innerText = `"${randomAffirmation}"`;
+        textEl.style.opacity = '1';
+        textEl.style.transform = 'translateY(0)';
+      }, 200);
+    }
 
     drawAffirmationBtn.addEventListener('click', triggerAffirmationDraw);
     matchaCup.addEventListener('click', triggerAffirmationDraw);
 
-    // --- 9. Heavy Thought Dissolver Particle Engine ---
-const thoughtInput = document.getElementById('thought-input');
-const dissolveBtn = document.getElementById('dissolve-btn');
+    // --- 9. Heavy Thought Dissolver ---
+    const thoughtInput = document.getElementById('thought-input');
+    const dissolveBtn = document.getElementById('dissolve-btn');
 
-dissolveBtn.addEventListener('click', () => {
-  const val = thoughtInput.value.trim();
-  if (!val) {
-    showToast("Thought Area Empty 🌸", "Type something down first before releasing it.");
-    return;
-  }
+    dissolveBtn.addEventListener('click', () => {
+      const val = thoughtInput.value.trim();
+      if (!val) {
+        showToast("Thought Area Empty 🌸", "Type something down first before releasing it.");
+        return;
+      }
 
-  // 1. Blur and fade out the text inside the input
-  thoughtInput.classList.add('dissolving-text');
+      thoughtInput.classList.add('dissolving-text');
 
-  // 2. Spawn floating particle burst over the input box
-  const inputParent = thoughtInput.parentElement;
-  inputParent.style.position = 'relative';
+      const inputParent = thoughtInput.parentElement;
+      inputParent.style.position = 'relative';
 
-  const icons = ['✨', '🌸', '🍃', '☁️', '💫', '🍓'];
-  const particleCount = 24;
+      const icons = ['✨', '🌸', '🍃', '☁️', '💫', '🍓'];
+      const particleCount = 20;
 
-  for (let i = 0; i < particleCount; i++) {
-    const particle = document.createElement('span');
-    particle.className = 'dissolve-particle';
-    particle.setAttribute('aria-hidden', 'true');
-    particle.innerText = icons[Math.floor(Math.random() * icons.length)];
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('span');
+        particle.className = 'dissolve-particle';
+        particle.setAttribute('aria-hidden', 'true');
+        particle.innerText = icons[Math.floor(Math.random() * icons.length)];
 
-    // Randomize initial positions across the input field area
-    const startX = Math.random() * (thoughtInput.offsetWidth - 24);
-    const startY = Math.random() * (thoughtInput.offsetHeight - 24);
+        const startX = Math.random() * (thoughtInput.offsetWidth - 24);
+        const startY = Math.random() * (thoughtInput.offsetHeight - 24);
 
-    // Randomize upward drift trajectories
-    const driftX = (Math.random() - 0.5) * 140; // Drift left/right (-70px to +70px)
-    const driftY = -70 - Math.random() * 90;    // Drift upward (-70px to -160px)
+        const driftX = (Math.random() - 0.5) * 120;
+        const driftY = -60 - Math.random() * 80;
 
-    particle.style.left = `${startX}px`;
-    particle.style.top = `${startY}px`;
-    particle.style.setProperty('--drift-x', `${driftX}px`);
-    particle.style.setProperty('--drift-y', `${driftY}px`);
-    particle.style.animationDelay = `${Math.random() * 0.15}s`;
+        particle.style.left = `${startX}px`;
+        particle.style.top = `${startY}px`;
+        particle.style.setProperty('--drift-x', `${driftX}px`);
+        particle.style.setProperty('--drift-y', `${driftY}px`);
+        particle.style.animationDelay = `${Math.random() * 0.15}s`;
 
-    inputParent.appendChild(particle);
+        inputParent.appendChild(particle);
 
-    // Clean up particle element after animation finishes
-    setTimeout(() => particle.remove(), 1250);
-  }
+        setTimeout(() => particle.remove(), 1250);
+      }
 
-  // 3. Reset input field after particles dissipate
-  setTimeout(() => {
-    thoughtInput.value = '';
-    thoughtInput.classList.remove('dissolving-text');
-    showToast(
-      "Thought Released ✨",
-      "Your heavy thought has dissolved into the sanctuary air. You don't have to carry it tonight."
-    );
-  }, 1000);
-});
-// Ctrl + Enter or Cmd + Enter shortcut to dissolve thought
+      setTimeout(() => {
+        thoughtInput.value = '';
+        thoughtInput.classList.remove('dissolving-text');
+        showToast(
+          "Thought Released ✨",
+          "Your heavy thought has dissolved into the sanctuary air. You don't have to carry it tonight."
+        );
+      }, 1000);
+    });
+
     thoughtInput.addEventListener('keydown', (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         dissolveBtn.click();
       }
     });
-    // --- 10. Worry Safety Deposit Box (Vault Logic) ---
+
+    // --- 10. Worry Safety Deposit Box ---
     let parkedWorries = JSON.parse(localStorage.getItem('isa_vault_items') || '[]');
 
     function renderVaultItems() {
       const container = document.getElementById('vault-list-container');
       if (parkedWorries.length === 0) {
         container.innerHTML = `
-          <div class="flex flex-col items-center justify-center py-6 space-y-2 text-center text-[#556B42] dark:text-[#9CAF88]">
-            <span class="text-3xl" aria-hidden="true">🌿</span>
+          <div class="flex flex-col items-center justify-center py-4 space-y-1 text-center text-[#556B42] dark:text-[#9CAF88]">
+            <span class="text-2xl" aria-hidden="true">🌿</span>
             <p class="text-xs italic font-medium">No parked worries currently. The vault is clear and empty.</p>
           </div>
         `;
@@ -1631,7 +1606,7 @@ dissolveBtn.addEventListener('click', () => {
         const text = typeof item === 'object' ? item.text : item;
         const time = typeof item === 'object' ? item.time : '';
         return `
-          <div class="flex items-center justify-between bg-[#FFF5D7]/90 dark:bg-[#251F30]/90 p-2.5 rounded-xl border border-[#6E8B54]/30 text-xs sm:text-sm">
+          <div class="flex items-center justify-between bg-[#FFF5D7]/90 dark:bg-[#251F30]/90 p-2 sm:p-2.5 rounded-xl border border-[#6E8B54]/30 text-xs">
             <div class="flex flex-col flex-1 pr-2 truncate">
               <span class="text-[#3D2F37] dark:text-[#E6DFEC] font-medium truncate">🔒 ${escapeHtml(text)}</span>
               ${time ? `<span class="text-[10px] text-[#556B42] dark:text-[#9CAF88] opacity-75">${time}</span>` : ''}
@@ -1644,7 +1619,7 @@ dissolveBtn.addEventListener('click', () => {
       }).join('');
 
       const clearAllBtnHtml = `
-        <div class="pt-2 flex justify-end">
+        <div class="pt-1 flex justify-end">
           <button onclick="clearAllVaultWorries()" class="text-xs text-[#C87389] dark:text-[#FFCCE1] hover:underline font-bold">
             Clear All Worries 🧹
           </button>
@@ -1683,22 +1658,22 @@ dissolveBtn.addEventListener('click', () => {
       renderVaultItems();
       showToast("Vault Emptied 🌸", "All parked worries have been cleared.");
     }
-function escapeHtml(str) {
+
+    function escapeHtml(str) {
       return str.replace(/[&<>"']/g, function(m) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
       });
     }
 
-    // Render stored worries on page load
     renderVaultItems();
 
-    // Allow pressing 'Enter' inside the vault input to lock away worries
     document.getElementById('vault-input').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         parkWorryInVault();
       }
     });
-    // --- 11. Breathing Engine (Physiological Sigh vs. 4-7-8) ---
+
+    // --- 11. Breathing Engine ---
     let currentBreathingTech = 'sigh';
     let breathingInterval = null;
     let isBreathing = false;
@@ -1716,52 +1691,46 @@ function escapeHtml(str) {
       const btn478 = document.getElementById('btn-tech-478');
 
       if (tech === 'sigh') {
-        btnSigh.className = "bg-[#C87389] text-white font-fredoka text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-sm border border-[#C87389] transition-all min-h-[38px]";
-        btn478.className = "bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2 rounded-full border border-[#C87389]/40 hover:bg-white transition-all min-h-[38px]";
+        btnSigh.className = "bg-[#C87389] text-white font-fredoka text-[11px] sm:text-xs md:text-sm font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-sm border border-[#C87389] transition-all min-h-[36px]";
+        btn478.className = "bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-[11px] sm:text-xs md:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-[#C87389]/40 hover:bg-white transition-all min-h-[36px]";
         techDesc.innerText = "Two quick inhales through nose, followed by one long exhale through mouth. Biological panic offloader.";
       } else {
-        btn478.className = "bg-[#C87389] text-white font-fredoka text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-sm border border-[#C87389] transition-all min-h-[38px]";
-        btnSigh.className = "bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-xs sm:text-sm font-semibold px-4 py-2 rounded-full border border-[#C87389]/40 hover:bg-white transition-all min-h-[38px]";
+        btn478.className = "bg-[#C87389] text-white font-fredoka text-[11px] sm:text-xs md:text-sm font-bold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-sm border border-[#C87389] transition-all min-h-[36px]";
+        btnSigh.className = "bg-[#FFF5D7] dark:bg-[#251F30] text-[#C87389] dark:text-[#FFCCE1] font-fredoka text-[11px] sm:text-xs md:text-sm font-semibold px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-[#C87389]/40 hover:bg-white transition-all min-h-[36px]";
         techDesc.innerText = "4s Inhale, 7s Hold, 8s Exhale. Deep vagus nerve calming rhythm.";
       }
     }
 
     function runPhysiologicalSighCycle() {
-      // Step 1: Inhale Deep (2.5s)
       breathingText.innerText = "Deep Inhale... 🌿";
-      breathingCircle.className = "breathing-circle expand flex items-center justify-center text-center p-3";
+      breathingCircle.className = "breathing-circle expand flex items-center justify-center text-center p-2 sm:p-3";
 
       setTimeout(() => {
         if (!isBreathing) return;
-        // Step 2: Extra Top-Up Inhale (1.5s)
         breathingText.innerText = "Extra Top-Up Inhale! ✨";
-        breathingCircle.className = "breathing-circle topup flex items-center justify-center text-center p-3";
+        breathingCircle.className = "breathing-circle topup flex items-center justify-center text-center p-2 sm:p-3";
 
         setTimeout(() => {
           if (!isBreathing) return;
-          // Step 3: Long Exhale (6s)
           breathingText.innerText = "Slow Exhale Out... 🌸";
-          breathingCircle.className = "breathing-circle contract flex items-center justify-center text-center p-3";
+          breathingCircle.className = "breathing-circle contract flex items-center justify-center text-center p-2 sm:p-3";
         }, 1500);
       }, 2500);
     }
 
     function run478Cycle() {
-      // Inhale 4s
       breathingText.innerText = "Inhale... 🌿";
-      breathingCircle.className = "breathing-circle expand flex items-center justify-center text-center p-3";
+      breathingCircle.className = "breathing-circle expand flex items-center justify-center text-center p-2 sm:p-3";
       
       setTimeout(() => {
         if (!isBreathing) return;
-        // Hold 7s
         breathingText.innerText = "Hold... ✨";
-        breathingCircle.className = "breathing-circle hold flex items-center justify-center text-center p-3";
+        breathingCircle.className = "breathing-circle hold flex items-center justify-center text-center p-2 sm:p-3";
         
         setTimeout(() => {
           if (!isBreathing) return;
-          // Exhale 8s
           breathingText.innerText = "Exhale... 🌸";
-          breathingCircle.className = "breathing-circle contract flex items-center justify-center text-center p-3";
+          breathingCircle.className = "breathing-circle contract flex items-center justify-center text-center p-2 sm:p-3";
         }, 7000);
       }, 4000);
     }
@@ -1771,7 +1740,7 @@ function escapeHtml(str) {
       if (breathingInterval) clearInterval(breathingInterval);
       startBreathBtn.innerText = "Start Breathing Pace 🌸";
       breathingText.innerText = "Tap Start";
-      breathingCircle.className = "breathing-circle flex items-center justify-center text-center p-3";
+      breathingCircle.className = "breathing-circle flex items-center justify-center text-center p-2 sm:p-3";
     }
 
     startBreathBtn.addEventListener('click', () => {
@@ -1818,190 +1787,205 @@ function escapeHtml(str) {
         toast.classList.add('hidden');
       }, 4500);
     }
-    // --- 14. Interactive Cute Doodle Canvas Logic ---
-const canvasEl = document.getElementById('doodle-canvas');
-const ctx2d = canvasEl ? canvasEl.getContext('2d') : null;
-const canvasHint = document.getElementById('canvas-hint');
 
-let isDrawing = false;
-let currentPenColor = '#C87389';
-let currentLineWidth = 7;
-let isEraserActive = false;
-let activeSticker = null;
+    // --- 14. Interactive Responsive Doodle Canvas ---
+    const canvasEl = document.getElementById('doodle-canvas');
+    const doodleContainer = document.getElementById('doodle-container');
+    const ctx2d = canvasEl ? canvasEl.getContext('2d') : null;
+    const canvasHint = document.getElementById('canvas-hint');
 
-// --- Auto-Save Functions ---
-function saveDoodleToLocalStorage() {
-  if (!canvasEl) return;
-  try {
-    const dataUrl = canvasEl.toDataURL();
-    localStorage.setItem('isa_doodle_autosave', dataUrl);
-  } catch (e) {
-    console.log("Auto-save failed:", e);
-  }
-}
+    let isDrawing = false;
+    let currentPenColor = '#C87389';
+    let currentLineWidth = 7;
+    let isEraserActive = false;
+    let activeSticker = null;
 
-function loadDoodleFromLocalStorage() {
-  if (!canvasEl || !ctx2d) return;
-  const savedData = localStorage.getItem('isa_doodle_autosave');
-  if (savedData) {
-    const img = new Image();
-    const dpr = window.devicePixelRatio || 1;
-    img.onload = function() {
-      const w = canvasEl.width / dpr;
-      const h = canvasEl.height / dpr;
-      ctx2d.clearRect(0, 0, w, h);
-      ctx2d.drawImage(img, 0, 0, w, h);
+    function saveDoodleToLocalStorage() {
+      if (!canvasEl) return;
+      try {
+        const dataUrl = canvasEl.toDataURL();
+        localStorage.setItem('isa_doodle_autosave', dataUrl);
+      } catch (e) {
+        console.log("Auto-save failed:", e);
+      }
+    }
+
+    function loadDoodleFromLocalStorage() {
+      if (!canvasEl || !ctx2d) return;
+      const savedData = localStorage.getItem('isa_doodle_autosave');
+      if (savedData) {
+        const img = new Image();
+        const dpr = window.devicePixelRatio || 1;
+        img.onload = function() {
+          const w = canvasEl.width / dpr;
+          const h = canvasEl.height / dpr;
+          ctx2d.clearRect(0, 0, w, h);
+          ctx2d.drawImage(img, 0, 0, w, h);
+          if (canvasHint) canvasHint.style.opacity = '0';
+        };
+        img.src = savedData;
+      }
+    }
+
+    function resizeDoodleCanvas() {
+      if (!canvasEl || !ctx2d || !doodleContainer) return;
+      const rect = doodleContainer.getBoundingClientRect();
+      
+      if (rect.width === 0 || rect.height === 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      const tempCanvasData = canvasEl.toDataURL();
+
+      canvasEl.width = rect.width * dpr;
+      canvasEl.height = rect.height * dpr;
+
+      ctx2d.scale(dpr, dpr);
+
+      if (tempCanvasData && tempCanvasData !== 'data:,') {
+        const img = new Image();
+        img.onload = function() {
+          ctx2d.drawImage(img, 0, 0, rect.width, rect.height);
+        };
+        img.src = tempCanvasData;
+      } else {
+        loadDoodleFromLocalStorage();
+      }
+    }
+
+    // Dynamic Tablet & Mobile Resize Observer
+    if (window.ResizeObserver && doodleContainer) {
+      const resizeObserver = new ResizeObserver(() => {
+        resizeDoodleCanvas();
+      });
+      resizeObserver.observe(doodleContainer);
+    } else {
+      window.addEventListener('resize', resizeDoodleCanvas);
+      window.addEventListener('orientationchange', resizeDoodleCanvas);
+    }
+
+    function getCanvasCoords(e) {
+      const rect = canvasEl.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function startDrawing(e) {
+      if (e.target !== canvasEl) return;
       if (canvasHint) canvasHint.style.opacity = '0';
-    };
-    img.src = savedData;
-  }
-}
 
-function resizeDoodleCanvas() {
-  if (!canvasEl || !ctx2d) return;
-  const rect = canvasEl.parentElement.getBoundingClientRect();
-  
-  // Guard: do not resize if canvas container is currently hidden
-  if (rect.width === 0 || rect.height === 0) return;
+      const pos = getCanvasCoords(e);
 
-  const dpr = window.devicePixelRatio || 1;
+      if (activeSticker) {
+        ctx2d.font = '36px sans-serif';
+        ctx2d.textAlign = 'center';
+        ctx2d.textBaseline = 'middle';
+        ctx2d.fillText(activeSticker, pos.x, pos.y);
+        saveDoodleToLocalStorage();
+        return;
+      }
 
-  // Preserve current canvas contents before resizing
-  const tempCanvasData = canvasEl.toDataURL();
+      isDrawing = true;
+      ctx2d.beginPath();
+      ctx2d.moveTo(pos.x, pos.y);
+      
+      ctx2d.strokeStyle = isEraserActive ? (document.body.classList.contains('dim-mode') ? '#1D1726' : '#FFFDF9') : currentPenColor;
+      ctx2d.lineWidth = isEraserActive ? currentLineWidth * 2.5 : currentLineWidth;
+      ctx2d.lineCap = 'round';
+      ctx2d.lineJoin = 'round';
+    }
 
-  // Scale physical pixel resolution to match display density
-  canvasEl.width = rect.width * dpr;
-  canvasEl.height = rect.height * dpr;
+    function drawMotion(e) {
+      if (!isDrawing) return;
+      if (e.cancelable) e.preventDefault();
+      const pos = getCanvasCoords(e);
+      ctx2d.lineTo(pos.x, pos.y);
+      ctx2d.stroke();
+    }
 
-  // Normalize drawing context scale to match CSS logical pixels
-  ctx2d.scale(dpr, dpr);
+    function stopDrawing() {
+      if (isDrawing) {
+        ctx2d.closePath();
+        isDrawing = false;
+        saveDoodleToLocalStorage();
+      }
+    }
 
-  // Restore drawing onto scaled context
-  if (tempCanvasData && tempCanvasData !== 'data:,') {
-    const img = new Image();
-    img.onload = function() {
-      ctx2d.drawImage(img, 0, 0, rect.width, rect.height);
-    };
-    img.src = tempCanvasData;
-  } else {
-    loadDoodleFromLocalStorage();
-  }
-}
+    if (canvasEl) {
+      canvasEl.addEventListener('mousedown', startDrawing);
+      canvasEl.addEventListener('mousemove', drawMotion);
+      window.addEventListener('mouseup', stopDrawing);
 
-window.addEventListener('resize', resizeDoodleCanvas);
+      canvasEl.addEventListener('touchstart', startDrawing, { passive: false });
+      canvasEl.addEventListener('touchmove', drawMotion, { passive: false });
+      window.addEventListener('touchend', stopDrawing);
+    }
 
-function getCanvasCoords(e) {
-  const rect = canvasEl.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  return {
-    x: clientX - rect.left,
-    y: clientY - rect.top
-  };
-}
+    function updateCanvasCursor() {
+      if (!canvasEl) return;
+      canvasEl.classList.remove('cursor-pen', 'cursor-eraser', 'cursor-stamp');
 
-function startDrawing(e) {
-  if (e.target !== canvasEl) return;
-  if (canvasHint) canvasHint.style.opacity = '0';
+      if (activeSticker) {
+        canvasEl.classList.add('cursor-stamp');
+      } else if (isEraserActive) {
+        canvasEl.classList.add('cursor-eraser');
+      } else {
+        canvasEl.classList.add('cursor-pen');
+      }
+    }
 
-  const pos = getCanvasCoords(e);
+    function updateBrushSizeFromSlider(val) {
+      currentLineWidth = parseInt(val, 10);
+      const sizeLabel = document.getElementById('brush-size-label');
+      if (sizeLabel) sizeLabel.innerText = `${val}px`;
+    }
 
-  // If a sticker stamp is selected, stamp it on tap and auto-save
-  if (activeSticker) {
-    ctx2d.font = '36px sans-serif';
-    ctx2d.textAlign = 'center';
-    ctx2d.textBaseline = 'middle';
-    ctx2d.fillText(activeSticker, pos.x, pos.y);
-    saveDoodleToLocalStorage();
-    return;
-  }
-
-  isDrawing = true;
-  ctx2d.beginPath();
-  ctx2d.moveTo(pos.x, pos.y);
-  
-  ctx2d.strokeStyle = isEraserActive ? (document.body.classList.contains('dim-mode') ? '#1D1726' : '#FFFDF9') : currentPenColor;
-  ctx2d.lineWidth = isEraserActive ? currentLineWidth * 2.5 : currentLineWidth;
-  ctx2d.lineCap = 'round';
-  ctx2d.lineJoin = 'round';
-}
-
-function drawMotion(e) {
-  if (!isDrawing) return;
-  e.preventDefault(); // Prevents touch scrolling while drawing
-  const pos = getCanvasCoords(e);
-  ctx2d.lineTo(pos.x, pos.y);
-  ctx2d.stroke();
-}
-
-function stopDrawing() {
-  if (isDrawing) {
-    ctx2d.closePath();
-    isDrawing = false;
-    saveDoodleToLocalStorage(); // Auto-save after completing stroke
-  }
-}
-
-if (canvasEl) {
-  // Mouse listeners
-  canvasEl.addEventListener('mousedown', startDrawing);
-  canvasEl.addEventListener('mousemove', drawMotion);
-  window.addEventListener('mouseup', stopDrawing);
-
-  // Mobile Touch listeners
-  canvasEl.addEventListener('touchstart', startDrawing, { passive: false });
-  canvasEl.addEventListener('touchmove', drawMotion, { passive: false });
-  window.addEventListener('touchend', stopDrawing);
-}
-
-// Canvas Control Functions
-// Dynamic Cursor Switcher
-function updateCanvasCursor() {
-  if (!canvasEl) return;
-  canvasEl.classList.remove('cursor-pen', 'cursor-eraser', 'cursor-stamp');
-
-  if (activeSticker) {
-    canvasEl.classList.add('cursor-stamp');
-  } else if (isEraserActive) {
-    canvasEl.classList.add('cursor-eraser');
-  } else {
-    canvasEl.classList.add('cursor-pen');
-  }
-}
-
-// Brush Size Slider Handler
-function updateBrushSizeFromSlider(val) {
-  currentLineWidth = parseInt(val, 10);
-  const sizeLabel = document.getElementById('brush-size-label');
-  if (sizeLabel) sizeLabel.innerText = `${val}px`;
-}
-
-// Sticker Stamp Selection
-function setStickerStamp(emoji, btn) {
+    // Sticker Stamp Selection (Shows name on selected emoji, resets others to emoji only)
+function setStickerStamp(emoji, name, btn) {
   activeSticker = emoji;
   isEraserActive = false;
-  document.getElementById('eraser-btn').classList.remove('bg-[#C87389]', 'text-white');
-  
-  document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'scale-110'));
-  if (btn) btn.classList.add('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'scale-110');
-  
+
+  const eraserBtn = document.getElementById('eraser-btn');
+  if (eraserBtn) eraserBtn.classList.remove('bg-[#C87389]', 'text-white');
+
+  // Reset all stamp buttons back to showing ONLY their emoji
+  document.querySelectorAll('.sticker-btn').forEach(b => {
+    b.classList.remove('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'ring-2', 'ring-[#C87389]');
+    if (b.dataset.emoji) b.innerText = b.dataset.emoji;
+  });
+
+  // Display "Name Emoji" on the active button
+  if (btn) {
+    btn.classList.add('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'ring-2', 'ring-[#C87389]');
+    btn.innerText = `${name} ${emoji}`;
+  }
+
   updateCanvasCursor();
 }
 
-// Color Selection (Palette & Spectrum)
+// Color Selection
 function setDoodleColor(color, btn) {
   currentPenColor = color;
   isEraserActive = false;
   activeSticker = null;
-  
-  document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'scale-110'));
-  document.getElementById('eraser-btn').classList.remove('bg-[#C87389]', 'text-white');
-  
+
+  // Reset stamp labels back to emoji-only
+  document.querySelectorAll('.sticker-btn').forEach(b => {
+    b.classList.remove('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'ring-2', 'ring-[#C87389]');
+    if (b.dataset.emoji) b.innerText = b.dataset.emoji;
+  });
+
+  const eraserBtn = document.getElementById('eraser-btn');
+  if (eraserBtn) eraserBtn.classList.remove('bg-[#C87389]', 'text-white');
+
   document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('ring-2', 'ring-[#C87389]'));
   if (btn && btn.classList.contains('color-btn')) {
     btn.classList.add('ring-2', 'ring-[#C87389]');
   }
-  
+
   updateCanvasCursor();
 }
 
@@ -2009,9 +1993,13 @@ function setDoodleColor(color, btn) {
 function toggleEraser() {
   isEraserActive = !isEraserActive;
   activeSticker = null;
-  
-  document.querySelectorAll('.sticker-btn').forEach(b => b.classList.remove('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'scale-110'));
-  
+
+  // Reset stamp labels back to emoji-only
+  document.querySelectorAll('.sticker-btn').forEach(b => {
+    b.classList.remove('bg-white', 'dark:bg-[#34293D]', 'shadow-sm', 'ring-2', 'ring-[#C87389]');
+    if (b.dataset.emoji) b.innerText = b.dataset.emoji;
+  });
+
   const eraserBtn = document.getElementById('eraser-btn');
   if (isEraserActive) {
     eraserBtn.classList.add('bg-[#C87389]', 'text-white');
@@ -2022,47 +2010,44 @@ function toggleEraser() {
   updateCanvasCursor();
 }
 
-function clearDoodleCanvas() {
-  if (!ctx2d) return;
-  ctx2d.clearRect(0, 0, canvasEl.width, canvasEl.height);
-  localStorage.removeItem('isa_doodle_autosave'); // Remove saved doodle from storage
-  if (canvasHint) canvasHint.style.opacity = '0.4';
-  showToast("Canvas Cleared 🌸", "Your drawing board is fresh and ready!");
-}
+    function clearDoodleCanvas() {
+      if (!ctx2d) return;
+      ctx2d.clearRect(0, 0, canvasEl.width, canvasEl.height);
+      localStorage.removeItem('isa_doodle_autosave');
+      if (canvasHint) canvasHint.style.opacity = '0.4';
+      showToast("Canvas Cleared 🌸", "Your drawing board is fresh and ready!");
+    }
 
-function downloadDoodle() {
-  if (!canvasEl) return;
+    function downloadDoodle() {
+      if (!canvasEl) return;
 
-  canvasEl.toBlob((blob) => {
-    if (!blob) return;
+      canvasEl.toBlob((blob) => {
+        if (!blob) return;
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.download = `isa-sanctuary-doodle-${Date.now()}.png`;
-    link.href = url;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = `isa-sanctuary-doodle-${Date.now()}.png`;
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-    // Clean up memory after download
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-    showToast("Doodle Saved! 💾", "Saved to your device's Downloads folder.");
-  }, 'image/png');
-}
+        showToast("Doodle Saved! 💾", "Saved to your device's Downloads folder.");
+      }, 'image/png');
+    }
 
-// Ensure proper canvas sizing & load saved artwork when Tab 5 is opened
-const origSwitchTab = window.switchTab;
-window.switchTab = function(tabId) {
-  origSwitchTab(tabId);
-  if (tabId === 'cinema') {
-    setTimeout(() => {
-      resizeDoodleCanvas();
-      loadDoodleFromLocalStorage();
-    }, 50);
-  }
-};
-
+    const origSwitchTab = window.switchTab;
+    window.switchTab = function(tabId) {
+      origSwitchTab(tabId);
+      if (tabId === 'cinema') {
+        setTimeout(() => {
+          resizeDoodleCanvas();
+          loadDoodleFromLocalStorage();
+        }, 50);
+      }
+    };
   </script>
 </body>
 </html>
