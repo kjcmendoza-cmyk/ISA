@@ -453,7 +453,7 @@
   <div id="overwhelm-overlay" class="fixed inset-0 bg-[#15111D]/95 backdrop-blur-xl z-[100] hidden flex flex-col items-center justify-between p-6 text-center transition-all duration-500 overflow-y-auto">
     <div class="pt-6 space-y-2">
       <div class="inline-flex items-center space-x-2 bg-[#251F30] border border-[#6E8B54]/50 px-4 py-1.5 rounded-full text-xs font-fredoka text-[#9CAF88]">
-        <span>🍵 Kuya's Zero-Brainpower Sanctuary</span>
+        <span>🍵 Isa's Peacful Sanctuary</span>
         <span class="hidden md:inline text-[10px] text-gray-400 opacity-75">(Press Esc to exit)</span>
       </div>
     </div>
@@ -472,7 +472,7 @@
           Nothing to read. Nothing to fix.
         </h2>
         <p class="text-sm sm:text-base md:text-lg text-[#9CAF88] font-medium leading-relaxed max-w-md mx-auto">
-          Just breathe here with Kuya. You don't have to accomplish anything right now. Unclench your jaw and sink into your bed.
+          One Step at a Time. You don't have to accomplish anything right now. Relax yourslef and sink into your bed.
         </p>
       </div>
 
@@ -598,7 +598,7 @@
         The Strawberry-Matcha Corner
       </h1>
       <p class="text-xs sm:text-sm md:text-base text-[#556B42] dark:text-[#A8C3A0] font-medium max-w-xl mx-auto leading-relaxed">
-        No replies needed. No demands. Just a safe harbor from your Kuya where you can put down your burdens and rest.
+        No replies needed. No demands. Just a safe harbor where you can put down your burdens and rest.
       </p>
     </section>
 
@@ -659,7 +659,7 @@
     <div id="tab-panel-letter" class="tab-panel tab-content-panel space-y-5">
       <div class="envelope-wrapper flex justify-center py-2">
         <!-- Envelope Container (Interactive Toggle Card) -->
-        <div id="envelope" class="envelope flex flex-col justify-between p-6 overflow-hidden" tabindex="0" role="button" aria-label="Open or retract Kuya's letter for Isa">
+        <div id="envelope" class="envelope flex flex-col justify-between p-6 overflow-hidden" tabindex="0" role="button" aria-label="Open or retract the letter for Isa">
           <div class="envelope-flap"></div>
           
           <div class="flex justify-between items-start z-20">
@@ -1482,7 +1482,7 @@ envelope.addEventListener('keydown', (e) => {
 
     // --- 8. Targeted Emotion Validation Data & Switcher ---
     const emotionValidations = {
-      grades: "A quiz score is just a result of one bad day, not who you are. High grade or low grade, Kuya is always super proud of you no matter what. 🌸",
+      grades: "A quiz score is just a result of one bad day, not who you are. High grade or low grade, I am always super proud of you no matter what. 🌸",
       unproductive: "You don't need to do a hundred things today just to deserve a break. Today was hard, and just getting through it is already enough. Rest up, Isa. 🍃",
       cried: "Cry as much as you need to, there is zero shame in letting it out. You never ever have to feel bad for having feelings. Be vulnerable if you need to, I am always here to listen 🍓",
       burntout: "If you're completely out of energy, stop pushing yourself. Close your eyes, rest, and let yourself recover then restart again. 🍵"
@@ -1517,7 +1517,7 @@ envelope.addEventListener('keydown', (e) => {
       "If you need to cry, vent, or just sit in quiet silence, I'm right here with you. You'll never be alone in this. 🌿",
       "You are doing way better than you think you are. Be a little gentler with yourself tonight, okay? 🌸",
       "It's okay to just rest and do absolutely nothing. Your brain and body deserve space. 🍵",
-      "No matter how messy or overwhelming things get, Kuya will always be in your corner. Palagi mong kakampi. ✨"
+      "No matter how messy or overwhelming things get, I will always be in your corner. Palagi mong kakampi. ✨"
     ];
 
     const drawAffirmationBtn = document.getElementById('draw-affirmation-btn');
@@ -2017,11 +2017,23 @@ function clearDoodleCanvas() {
 
 function downloadDoodle() {
   if (!canvasEl) return;
-  const link = document.createElement('a');
-  link.download = `isa-sanctuary-doodle-${Date.now()}.png`;
-  link.href = canvasEl.toDataURL('image/png');
-  link.click();
-  showToast("Doodle Saved! 💾", "Downloaded to your device as a PNG image.");
+
+  canvasEl.toBlob((blob) => {
+    if (!blob) return;
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = `isa-sanctuary-doodle-${Date.now()}.png`;
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up memory after download
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    showToast("Doodle Saved! 💾", "Saved to your device's Downloads folder.");
+  }, 'image/png');
 }
 
 // Ensure proper canvas sizing & load saved artwork when Tab 5 is opened
